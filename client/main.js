@@ -39,8 +39,7 @@ let VueObject = Vue;
 
 new Vue({
     methods: {
-        //    ...mapActions(['setauth','clearAuth']),  
-        //    ...mapGetters(['getUserAccount'])       
+ 
     },
     created() {
 

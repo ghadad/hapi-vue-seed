@@ -1,6 +1,6 @@
 <template>
 <div id="container" class="container-fluid" @mousemove="idleReset">
-  <top-menu></top-menu>
+
   <div class="row">
     <div v-if="account.isauth" class="col-md-2">
       <app-menu></app-menu>

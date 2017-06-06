@@ -66,21 +66,7 @@ const actions = {
       window.location.href = "/#/login"
     })
   },
-  clearMenu: ({
-    commit
-  }, account) => commit('setMenu', []),
 
-  setMenu: ({
-    commit
-  }) => {
-    Api.getApps().then((res) => {
-      console.log(res.data)
-      commit('setMenu', res.data)
-    }).catch((err) => {
-      console.log(err)
-      commit('setMenu', [])
-    })
-  },
   setauth: ({
     commit
   }, account) => commit('setauth', account),
@@ -113,14 +99,7 @@ let Store = new Vuex.Store({
   //Add watch on state.account
 Store.watch((state) => state.account, (account) => {
 
-  if (!account.isauth)
-    Store.dispatch('clearMenu', [])
-  else {
-    Vue.nextTick(function() {
-      console.log("in watch :", state.account.isauth)
-      Store.dispatch('setMenu')
-    })
-  }
+
 })
 
 export default Store;

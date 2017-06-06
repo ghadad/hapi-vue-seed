@@ -2,6 +2,9 @@
 
 process.title = process.env.NODE_TITLE || 'No title'
 
+const req = require('request-promise');
+const crypto = require('crypto');
+const FB = require("fb");
 const Hapi = require('hapi')
 const Inert = require('inert')
 const utils = require("./server/helpers/utils")
@@ -36,7 +39,10 @@ server.register([
     register: require("./server/plugins/db"),
     options: server.app.config.db
   },
-  require("./server/plugins/auth")
+  {
+   register: require("./server/plugins/auth"),
+   options: require("./secret")
+ },
 ], function(err) {
   if (err) {
     console.log(err)

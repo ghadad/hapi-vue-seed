@@ -14,13 +14,16 @@
   "dependencies": {
     "axios": "^0.15.3",
     "babel-runtime": "^6.9.2",
+    "bell": "^8.7.0",
     "bootstrap": "^3.3.7",
     "bootstrap-for-vue": "^0.3.15",
+    "bootstrap-rtl": "^3.3.4",
     "bootstrap-vue": "^0.9.5",
     "cheerio": "^0.22.0",
     "dot-object": "^1.5.4",
     "ejs": "^2.5.6",
     "es6-promise": "^4.0.5",
+    "fb": "^2.0.0",
     "good": "^7.1.0",
     "good-console": "^6.4.0",
     "good-file": "^6.0.1",
@@ -38,7 +41,9 @@
     "lodash": "^4.17.4",
     "lout": "^9.2.0",
     "nodemailer": "^4.0.1",
+    "request-promise": "^4.2.1",
     "rotating-file-stream": "^1.2.2",
+    "sqlite3": "^3.1.8",
     "store": "^2.0.4",
     "ts-loader": "^2.0.0",
     "uiv": "^0.8.0",
@@ -52,8 +57,7 @@
     "vue-router": "^2.2.1",
     "vue-template-compiler": "^2.2.1",
     "vuedraggable": "^2.10.0",
-    "vuex": "^2.0.0",
-    "xml2json": "0.11.0"
+    "vuex": "^2.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.9.1",
