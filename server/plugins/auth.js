@@ -13,7 +13,7 @@ var myplugin = {
       server.auth.strategy('session', 'cookie', true, {
         password: 'password-should-be-32-characters',
         cookie: 'sid-example',
-        redirectTo: '/#/login',
+      //  redirectTo: '/#/login',
         isSecure: false,
       /*  validateFunc: function(request, session, callback) {
           cache.get(session.sid, (err, cached) => {
@@ -78,18 +78,33 @@ var myplugin = {
     },
     handler: function(request, reply) {
       if (request.auth.isAuthenticated) {
-
-        return reply(request.auth.credentials);
+        console.log(request.auth.credentials)
+        return reply(request.auth.credentials.profile);
       }
       return reply('Not logged in...').code(401);
     }
   });
+
+  server.route({
+    method: ['get'],
+    path: '/api/facebook/logout',
+    config: {
+      auth:false
+    },
+    handler: function(request, reply) {
+      request.cookieAuth.clear();
+       return reply.redirect('/');
+    }
+  });
+
 
 
       next()
     });
   }
 }
+
+
 
 myplugin.register.attributes = {
   name: 'auth',
