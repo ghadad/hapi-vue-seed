@@ -2,10 +2,9 @@
 <div id="container" class="container-fluid" @mousemove="idleReset">
 
   <div class="row">
-    <div v-if="account.isauth" class="col-md-2">
-      <app-menu></app-menu>
-    </div>
-    <div :class="{'col-md-10':account.isauth,'col-md-12':!account.isauth }">
+
+    <div>
+      {{account}}
       <router-view>
       </router-view>
     </div>
@@ -24,7 +23,7 @@ import {
 export default {
   name: 'container',
   created() {
-    this.checkAuth()
+
   },
   data() {
     return {
@@ -52,8 +51,9 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['checkAuth']),
+
     ...mapGetters(['getUserAccount']),
+    ...mapActions(['setauth']),
     showCookie: function() {
       console.log(document.cookie)
     },
@@ -62,6 +62,16 @@ export default {
     }
   },
   mounted() {
+    var vm = this;
+    vm.$http.get("/api/facebook/profile").then((res) => {
+      vm.profile = res.data
+      vm.setauth({
+        facebook: vm.profile
+      });
+    }).catch(err => {
+
+    });
+
     this.setIdleTimer = setInterval(() => {
       this.idleCountdown = this.idleCountdown - config.idleIntervalCheck
     }, config.idleIntervalCheck * 1000);

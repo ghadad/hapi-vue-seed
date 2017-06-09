@@ -7,6 +7,7 @@
         Vue.use(Router);
         import Home from '../components/Home.vue'
         import Login from '../components/login.vue'
+        import Myfiles from '../components/Myfiles.vue'
         import Notfound from '../components/Notfound.vue'
 
         let routes = [{
@@ -17,6 +18,13 @@
           path: '/login',
           name: 'Login',
           component: Login,
+          meta: {
+            noAuth: true
+          }
+        }, {
+          path: '/myfiles',
+          name: 'Myfiles',
+          component: Myfiles,
           meta: {
             noAuth: true
           }
@@ -40,7 +48,7 @@
 
         let router = new Router({
           routes: routes //,
-            //mode: 'history'
+          //mode: 'history'
         });
 
 

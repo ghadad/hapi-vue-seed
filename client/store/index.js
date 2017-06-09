@@ -10,72 +10,40 @@ import LocalStorage from "store";
 // each Vuex instance is just a single state tree.
 const state = {
   account: {
-    username: "",
-    isauth: false,
-    isAuthenticated: false,
-    groups: [],
-    admin: false,
-    env: ""
+    facebook : {},
+    admin: false
   },
 }
 
 
 const mutations = {
-
     setauth(state, account) {
-      if (account.username) {
+
         LocalStorage.set("isauth", true)
         Vue.set(state, 'account', {
-          username: account.username,
-          isauth: true,
-          isAuthenticated: true,
-          groups: account.groups,
-          admin: account.admin,
-          env: account.env
+          facebook:account.facebook,
+          admin: false
         })
 
-      } else {
-        LocalStorage.set("isauth", false)
-        Vue.set(state, 'account', {
-          username: "",
-          isauth: false,
-          isAuthenticated: false,
-          groups: [],
-          admin: false,
-          env: ""
-        })
-      }
-    }
+},
+clearauth(state) {
+  LocalStorage.set("isauth", false)
+  Vue.set(state, 'account', {
+    facebook:{},
+    admin: false
+  })
 }
-
+}
 // actions are functions that causes side effects and can involve
 // asynchronous operations.
 const actions = {
-  checkAuth: ({
-    commit
-  }) => {
-    Api.login().then((res) => {
-      commit('setauth', {
-        username: res.data.username,
-        groups: res.data.groups,
-        admin: res.data.admin,
-        env: res.data.env
-      })
-    }).catch(err => {
-
-      window.location.href = "/#/login"
-    })
-  },
-
-  setauth: ({
+    setauth: ({
     commit
   }, account) => commit('setauth', account),
+
   clearAuth: ({
     commit
-  }) => commit('setauth', {
-    username: "",
-    groups: []
-  })
+  }) => commit('clearauth')
 }
 
 const getters = {

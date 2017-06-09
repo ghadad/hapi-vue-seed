@@ -77,11 +77,23 @@ var myplugin = {
     }
     },
     handler: function(request, reply) {
+      console.log("server.app.db" ,server.app.db);
       if (request.auth.isAuthenticated) {
-        console.log(request.auth.credentials)
-        return reply(request.auth.credentials.profile);
+        server.app.db.get("select count(1) as cnt from users where id = ?",[parseInt(request.auth.credentials.profile.id)] ,(res) => {
+          let cred = request.auth.credentials ;
+          if(res) {
+            cred.profile.isGroupMember = true ;
+          } else {
+              cred.profile.isGroupMember = false ;
+          }
+          request.cookieAuth.set(cred);
+
+          return reply(request.auth.credentials.profile);
+        })
+      } else {
+        return reply('Not logged in...').code(401);
       }
-      return reply('Not logged in...').code(401);
+
     }
   });
 

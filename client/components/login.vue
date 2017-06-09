@@ -31,8 +31,12 @@ export default {
     var vm = this;
     vm.$http.get("/api/facebook/profile").then((res) => {
       vm.profile = res.data
+      vm.setauth({
+        facebook: vm.profile
+      });
+      window.location = "/"
     }).catch(err => {
-
+      window.location = "/#/login"
     });
   },
   methods: {
