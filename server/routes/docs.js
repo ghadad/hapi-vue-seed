@@ -6,7 +6,11 @@ module.exports = [{
     method: ['post'],
     path: '/api/docs/upload',
     config: Controller.upload
-  },
+  },  {
+      method: 'get',
+      path: '/api/docs/getfile/{id}',
+      config: Controller.getfile
+    },
   {
     method: 'get',
     path: '/api/docs/myfiles',
