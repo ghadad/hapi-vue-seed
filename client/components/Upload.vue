@@ -1,7 +1,6 @@
 <template>
-<div id="myfiles">
-  <h2>הקבצים שלי</h2>
-  <p>...</p>
+<div id="upload">
+  <h2>שתף קבצים</h2>
 </div>
 </template>
 <script>

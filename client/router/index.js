@@ -9,33 +9,55 @@
         import Login from '../components/login.vue'
         import Myfiles from '../components/Myfiles.vue'
         import Notfound from '../components/Notfound.vue'
-
+        import Upload from '../components/Upload.vue'
+        import Search from '../components/Search.vue'
+        import Donate from '../components/Donate.vue'
+        import Message from '../components/Message.vue'
         let routes = [{
-          path: '/',
-          name: 'Home',
-          component: Home
-        }, {
-          path: '/login',
-          name: 'Login',
-          component: Login,
-          meta: {
-            noAuth: true
+            path: '/',
+            name: 'Home',
+            component: Home
+          },
+          {
+            path: '/donate',
+            name: 'Donate',
+            component: Donate
+          }, {
+            path: '/message',
+            name: 'Message',
+            component: Message
+          }, {
+            path: '/upload',
+            name: 'Upload',
+            component: Upload
+          }, {
+            path: '/search',
+            name: 'Search',
+            component: Search
+          },
+          {
+            path: '/login',
+            name: 'Login',
+            component: Login,
+            meta: {
+              noAuth: true
+            }
+          }, {
+            path: '/myfiles',
+            name: 'myfiles',
+            component: Myfiles,
+            meta: {
+              noAuth: true
+            }
+          }, {
+            name: 'notfound',
+            path: '/notfound',
+            component: Notfound,
+            meta: {
+              noAuth: true
+            }
           }
-        }, {
-          path: '/myfiles',
-          name: 'Myfiles',
-          component: Myfiles,
-          meta: {
-            noAuth: true
-          }
-        }, {
-          name: 'notfound',
-          path: '/notfound',
-          component: Notfound,
-          meta: {
-            noAuth: true
-          }
-        }];
+        ];
 
 
 
@@ -53,7 +75,7 @@
 
 
 
-        router.beforeEach((to, from, next) => {
+        /*   router.beforeEach((to, from, next) => {
           if (to.matched.some(record => record.meta.noAuth)) {
             next()
           } else {
@@ -71,5 +93,5 @@
             }
           }
         })
-
+*/
         export default router;

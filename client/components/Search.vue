@@ -1,7 +1,7 @@
 <template>
-<div id="myfiles">
-  <h2>הקבצים שלי</h2>
-  <p>...</p>
+<div id="search">
+
+  <h2>חיפוש</h2>
 </div>
 </template>
 <script>

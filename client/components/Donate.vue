@@ -1,7 +1,7 @@
 <template>
-<div id="myfiles">
-  <h2>הקבצים שלי</h2>
-  <p>...</p>
+<div id="donate">
+  <h2>תרומה</h2>
+  <p>תפעול האתר נושא בעולויות כבידות נשמח לתרומתכם</p>
 </div>
 </template>
 <script>
