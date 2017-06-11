@@ -1,5 +1,5 @@
 let FB = require("fb");
-const  Promise = require("bluebird");
+const Promise = require("bluebird");
 
 let secret = require("../../secret");
 let fbOptions = {
@@ -9,6 +9,12 @@ let fbOptions = {
   version: 'v2.9'
 };
 
+let internals = {
+  members: [],
+  gid: secret.facebook.gid,
+  newMembers: [],
+  existsMembers: {}
+};
 
 FB.options(fbOptions);
 
@@ -17,9 +23,6 @@ let sqlite3 = require("sqlite3");
 let async = require("async");
 
 
-let internals = {
-  members:[]
-} ;
 if (!process.env.NODE_ENV) {
   console.log("Missing env variable NODE_ENV !")
   process.exit()
@@ -29,8 +32,6 @@ let config = require("../config");
 const db = new sqlite3.Database(config.db.storage);
 
 db.get("SELECT name FROM sqlite_master WHERE type='table' AND name='users'", function(err, res) {
-  console.log("err", err)
-  console.log("res", res)
   if (!res) {
     db.serialize(function() {
       db.run("create table users (id number primary key , name text , email text ,isadmin boolean)");
@@ -42,56 +43,71 @@ db.get("SELECT name FROM sqlite_master WHERE type='table' AND name='users'", fun
 
 
 
-function getMembers(nextUrl,callback) {
-  console.log(nextUrl)
+function getMembers(nextUrl, callback) {
+  console.log("NextUrl", nextUrl)
   nextUrl = nextUrl.replace("https://graph.facebook.com/v2.9", "")
   FB.api(nextUrl, {}, function(res) {
     if (res.data)
       res.data.forEach((p) => {
         internals.members.push(p);
       })
-    console.log("internals.members length :",internals.members.length )
-    if (res && res.paging && res.paging && res.paging.next ) {
-      getMembers(res.paging.next,callback)
+    console.log("internals.members length :", internals.members.length)
+    if (res && res.paging && res.paging && res.paging.next) { //} && internals.members.length < 90) {
+      getMembers(res.paging.next, callback)
     } else {
-      callback(internals.members);
+      console.log("internals.members.length", internals.members.length)
+      callback(null, true)
     }
   })
 }
 
 
-let insertMembers = function(memebers,cb) {
+let insertMembers = function(callback) {
   var stmt = db.prepare("INSERT INTO users (id,name) VALUES (?,?)");
   var stmt2 = db.prepare("select count(1) as cnt from users where id = ? ");
-  db.serialize(function() {
 
-    return new Promise((reject,resolve) =>{
-      internal.memebers.forEach(function(u) {
-      stmt2.get([u.id] ,function(err,res) {
-        reject(err)
-        if(res && res.cnt!=1)
-          stmt.run(u.id, u.name,function(err2,res2){
-            reject(err2)
-          });
-      })
-      });
-      resolve(true)
-    }).then(stat => {
-      stmt.finalize();
-      stmt2.finalize();
-      resolve(internals.memebers);
-      console.log("update members count : ", members.length)
-    });
+  return db.serialize(function() {
+
+    internals.members.forEach(function(u) {
+      console.log(internals.existsMembers[u.id])
+      if (internals.existsMembers[u.id] != true) {
+        stmt.run(u.id, u.name);
+        internals.newMembers.push(u)
+      }
+    })
+    console.log("Now finalize")
+    console.log("internals.newMembers", internals.newMembers.length)
+    stmt.finalize();
+    stmt2.finalize();
+    console.log("After finalize :internals.newMembers", internals.newMembers.length)
+    let finaleResult = internals.newMembers.slice();
+    internals.newMembers = [];
+    callback(null, finaleResult);
+  })
+}
+
+let setExists = function(callback) {
+  db.all("select * from users", (err, res) => {
+
+    res.forEach(u => {
+      internals.existsMembers[u.id] = true;
+    })
+    callback(null, true);
   })
 }
 
 module.exports = {
-  setAccessToken: function(a) {
-    FB.setAccessToken(a);
+  import: function(token, callback) {
+    console.log("start import")
+    FB.setAccessToken(token);
+    getMembers(internals.gid + "/members?limit=10000", callback);
   },
-  import : function(callback) {
-
-         getMembers("/397081443825167/members?limit=10000",callback);
-
-    }
+  filter: function(callback) {
+    console.log("start filter")
+    setExists(callback)
+  },
+  insert: function(callback) {
+    console.log("start insert")
+    insertMembers(callback)
+  }
 };

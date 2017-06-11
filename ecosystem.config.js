@@ -12,6 +12,7 @@ module.exports = {
     instances  : 0,
     exec_mode  : "cluster" ,
       env: {
+        NODE_ENV: "production" ,
         COMMON_VARIABLE: "true"
       },
       env_production : {
@@ -25,7 +26,8 @@ module.exports = {
     watch       : true,
     exec_mode  : "cluster" ,
       env: {
-        COMMON_VARIABLE: "true"
+        COMMON_VARIABLE: "true" ,
+        NODE_ENV: "development"
       },
       env_development : {
         NODE_ENV: "development"

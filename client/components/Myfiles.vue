@@ -5,6 +5,8 @@
 </div>
 </template>
 <script>
+import Store from "../store";
+
 export default {
   data() {
     return {
@@ -13,8 +15,7 @@ export default {
   },
   computed: {
     account: () => {
-
-      return this.store
+      return Store.state
     }
   }
 }
