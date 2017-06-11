@@ -14,6 +14,10 @@
         import Donate from '../components/Donate.vue'
         import Message from '../components/Message.vue'
         let routes = [{
+            path: '/home',
+            name: 'Home',
+            component: Home
+          }, {
             path: '/',
             name: 'Home',
             component: Home

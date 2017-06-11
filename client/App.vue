@@ -1,6 +1,6 @@
 <template>
 <div id="container" class="container-fluid" @mousemove="idleReset">
-  <h2>מורות משקיעות</h2>
+  <h2><router-link :to="{ path: '/', params: {} }">מורות משקיעות</router-link></h2>
   <div class="row">
     <div class="col-md-2">
       <div v-if="!account.facebook.id" class="panel panel-default">

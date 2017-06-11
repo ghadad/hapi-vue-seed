@@ -62,7 +62,7 @@ var myplugin = {
         handler: function(request, reply) {
           if (request.auth.isAuthenticated) {
             request.cookieAuth.set(request.auth.credentials);
-            return reply.redirect('http://eduil.tk:3000/#/login')
+            return reply.redirect('/#/home')
           }
           return reply('Authentication failed due to: ' + request.auth.error.message);
         }

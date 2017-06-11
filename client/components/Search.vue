@@ -2,6 +2,7 @@
 <div id="search">
 
   <h2>חיפוש</h2>
+  <input type="search" class="form-control" placeholder="Text input">
 </div>
 </template>
 <script>
