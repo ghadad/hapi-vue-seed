@@ -1,5 +1,5 @@
 {
-  "name": "selfapp-admin",
+  "name": "israeli-teachers-docs",
   "description": "A Hapi Vue project",
   "author": "Golan Hadad",
   "private": true,
@@ -91,5 +91,16 @@
     "webpack": "^2.0.0",
     "webpack-dev-server": "^1.14.1",
     "webpack-hot-middleware": "^2.10.0"
-  }
+  },
+  "version": "1.0.0",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ghadad/hapi-vue-seed.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ghadad/hapi-vue-seed/issues"
+  },
+  "homepage": "https://github.com/ghadad/hapi-vue-seed#readme"
 }
