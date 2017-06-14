@@ -45,7 +45,7 @@ export default {
                        <div class="dz-error-mark"><i class="fa fa-close"></i></div>
                    </div>
                `,
-        acceptedFiles: "image/*,.doc,.pdf",
+        acceptedFiles: "image/*,.doc,.docx,.pdf",
         dictDefaultMessage: "חץ על קליק ימני של העכבר קבצים כאן להעלאה",
         dictInvalidFileType: "לא ניתן להעלות סוג קובץ זה",
         dictFileTooBig: "הקובץ גדול מדי ({{filesize}}MiB). גודל מקסימלי הינו : {{maxFilesize}}MiB.",

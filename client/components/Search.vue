@@ -8,7 +8,7 @@
     <table class="table table-bordered">
       <tr v-for="r in result">
         <td style="direction:ltr"><a :href="'/api/docs/getfile/'+r.id"> {{r.filename}} </a></td>
-        <td style="direction:ltr">{{r.path}}</td>
+        <td style="direction:ltr">{{$moment(r.creation_date).format('YYYY-MM-DD HH:mm')}}</td>
         <td style="direction:ltr">{{r.md5}}</td>
       </tr>
     </table>

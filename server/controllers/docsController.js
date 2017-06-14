@@ -4,9 +4,10 @@
  const Joi = require('joi'); //Schema and validation
  const Boom = require('boom'); //HTTP errors
  const Async = require('async'); // HTTP requests
-const path = require('path');
+ const path = require('path');
  const Hoek = require("hoek");
-
+ const md5 = require("md5");
+ const mkdirp = require("mkdirp");
 
  const uuidV4 = require('uuid/v4');
 
@@ -18,26 +19,36 @@ const path = require('path');
      output: 'stream',
      parse: true,
      allow: 'multipart/form-data',
-     maxBytes:10 * 1024 * 1024 
+     maxBytes: 10 * 1024 * 1024
    },
 
    handler: function(request, reply) {
+     let db = this.db;
      var data = request.payload;
 
      //return reply(request.payload)
      if (data.file) {
        var name = data.file.hapi.filename;
+       var batch_id = md5(request.payload.batch_id);
+       var absdir = path.resolve(request.server.app.config.uploadDirectory, batch_id);
+       var fullpath = absdir + path.sep + name;
 
-       var fullpath = request.server.app.config.uploadDirectory + path.sep + name;
-       console.log("fullpath:",fullpath)
-       var file ;
+       console.log("fullpath:", fullpath)
+       var file;
        Async.series([
+         function(cb) {
+           mkdirp(absdir, function(err) {
+             if (err) cb(err, null)
+             else cb(null, true)
+
+           });
+         },
          function(cb) {
            file = fs.createWriteStream(fullpath);
            if (!file) {
              return cb("Failed to create fullpath :", null)
            }
-           cb(null,true)
+           cb(null, true)
          },
          function(cb) {
            file.on('error', function(err) {
@@ -45,13 +56,17 @@ const path = require('path');
            });
            data.file.pipe(file);
            data.file.on('end', function(err) {
-             var ret = {
-               fullpath: fullpath,
-               filename: data.file.hapi.filename,
-               headers: data.file.hapi.headers
-             }
-             cb(null, ret);
-           })
+             var creation_date = Math.round(new Date().getTime() / 1000);
+
+             db.run("insert into docs (batch_id,path,filename,creation_date) values(?,?,?,?)", [batch_id, absdir, data.file.hapi.filename, creation_date], (err) => {
+               var ret = {
+                 absdir: absdir,
+                 filename: data.file.hapi.filename,
+                 headers: data.file.hapi.headers
+               }
+               cb(null, ret);
+             });
+           });
          }
        ], function(err, result) {
          if (err) {
@@ -92,7 +107,7 @@ const path = require('path');
      console.log(request.query);
      if (request.query.term) {
        let term = request.query.term.replace(/[\+\s]/g, "%").replace(/\%+/g, "%");
-       sql += " where path like $term or filename like $term or md5 like $term";
+       sql += " where keys like $term or filename like $term or batch_id like $term";
        prm.$term = '%' + term + '%'
        console.log("term", term)
      }
@@ -102,8 +117,11 @@ const path = require('path');
        let result = []
        docs.forEach(d => {
          result.push({
+           creation_date: d.creation_date,
+           id: d.id,
+           md5: d.md5,
            filename: d.filename,
-           path: d.path.replace(/home.*data/g, "").replace(/ספרייה ראשית - מורות משקיעות/g, '').replace(/\/+/g, '#')
+           keys: JSON.parse(d.keys)
          })
 
        })

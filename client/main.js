@@ -19,6 +19,10 @@ Vue.prototype.Api = Api
 import VueCookie from 'vue-cookie';
 Vue.use(VueCookie);
 
+import moment from 'moment';
+Vue.prototype.$moment = moment;
+
+
 import store from "./store"
 
 import Bootstrap from 'bootstrap/dist/js/bootstrap.min.js'
@@ -38,19 +42,19 @@ import router from './router'
 let VueObject = Vue;
 
 new Vue({
-    methods: {
- 
-    },
-    created() {
+  methods: {
 
-    },
-    date: {
-        root: true
-    },
-    computed: {},
+  },
+  created() {
 
-    el: '#app',
-    store,
-    router,
-    render:h => h(App) 
+  },
+  date: {
+    root: true
+  },
+  computed: {},
+
+  el: '#app',
+  store,
+  router,
+  render: h => h(App)
 });
