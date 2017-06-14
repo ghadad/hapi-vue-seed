@@ -6,6 +6,8 @@
     <input type="text" v-model="description" class="form-control" id="description" placeholder="תאור קצר - לפחות  10 מילים">
     <div class="error">{{descriptionError}} </div>
   </div>
+  <h3>תמיד נשמח לתיאור נרחב </h3>
+  <textarea></textarea>
   <div v-show="description && !descriptionError">
     <h2>טעינת קבצים </h2>
     <dropzone id="myVueDropzone" :preview-template="previewTemplate" url="/api/docs/upload" :use-custom-dropzone-options="true" :dropzone-options="dropzoneOptions" v-on:vdropzone-error="showSError">
@@ -23,7 +25,12 @@ export default {
 
   name: 'Upload',
   mounted() {
-    console.log(Dropzone)
+    this.$router.push({
+
+      query: {
+        batch_id: this.batch_id
+      }
+    });
   },
   data() {
     return {

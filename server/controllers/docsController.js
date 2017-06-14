@@ -57,8 +57,11 @@
            data.file.pipe(file);
            data.file.on('end', function(err) {
              var creation_date = Math.round(new Date().getTime() / 1000);
-
-             db.run("insert into docs (batch_id,path,filename,creation_date) values(?,?,?,?)", [batch_id, absdir, data.file.hapi.filename, creation_date], (err) => {
+             if(data.file.hapi.headers['content-type'].match(/image/)) {
+//fullpath
+             }
+             db.run("insert into docs (batch_id,path,filename,creation_date,created_by) values(?,?,?,?,?)",
+             [batch_id, absdir, data.file.hapi.filename, creation_date,request.auth.credentials.profile.id], (err) => {
                var ret = {
                  absdir: absdir,
                  filename: data.file.hapi.filename,
@@ -102,18 +105,34 @@
    handler: function(request, reply) {
      //this.db.all("Select * from docs where path like '%פעילות%' or filename like '%פעילות%'",function(err,docs){
      //this.db.all("Select * from docs where id=?",["71c1dbe97d4fc8151f02b954d8026b0d"],function(err,docs){
+     const db = this.db ;
      let prm = {};
-     let sql = "Select * from docs";
+     let sql = "Select * from docs where 1=1 ";
+     let more_sql ="" ;
      console.log(request.query);
      if (request.query.term) {
        let term = request.query.term.replace(/[\+\s]/g, "%").replace(/\%+/g, "%");
-       sql += " where keys like $term or filename like $term or batch_id like $term";
+       more_sql += " and (keys like $term or filename like $term or batch_id like $term )";
        prm.$term = '%' + term + '%'
-       console.log("term", term)
      }
-     sql += " limit 100 "
-     console.log(sql);
-     this.db.all(sql, prm, function(err, docs) {
+
+     if (request.query.myfiles) {
+       more_sql += " and created_by = $id " ;
+       prm.$id = request.auth.credentials.profile.id
+     }
+     more_sql += " limit 100 "
+     Async.series([
+       function(cb) {
+            db.get("select count(*) as cnt from docs where 1=1 " +more_sql,prm,function(err,result) {
+              if(err)   cb(err,null);
+              else
+              cb(null,result.cnt)
+            })
+       },function(cb) {
+         db.all(sql + more_sql, prm, function(err, docs) {
+       if(err) {
+         cb(err,null)
+       } else {
        let result = []
        docs.forEach(d => {
          result.push({
@@ -125,7 +144,13 @@
          })
 
        })
-       reply(result)
+       cb(null,result)
+     }
      })
-   }
+   }],function(err,result) {
+      if(err) reply(Boom.badRequest(err))
+      else
+      reply({count:result[0],rows:result[1]});
+   })
+ }
  };
