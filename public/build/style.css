@@ -1,8 +1,11 @@
 
-#container[data-v-63506547] {
+#dis-container[data-v-ebaa04a4] {
   margin-top: 70px;
 }
-pre[data-v-63506547] {
+#fbloginimg[data-v-ebaa04a4] {
+  width: 100%
+}
+pre[data-v-ebaa04a4] {
   font-size: 90%;
   line-height: 1.2em;
   font-family: "Courier 10 Pitch", Courier, monospace;
@@ -20,7 +23,7 @@ pre[data-v-63506547] {
   background: #f4f4f4;
   border: solid 1px #e1e1e1
 }
-code[data-v-63506547] {
+code[data-v-ebaa04a4] {
   font-size: 90%;
   line-height: 1.2em;
   font-family: Monaco, Consolas, "Andale Mono", "DejaVu Sans Mono", monospace;
@@ -29,20 +32,20 @@ code[data-v-63506547] {
   padding: 1em 1em;
   background: #f4f4f4;
 }
-.english[data-v-63506547] {
+.english[data-v-ebaa04a4] {
   text-align: left;
   direction: ltr
 }
-.debug[data-v-63506547] {
+.debug[data-v-ebaa04a4] {
   display: none;
   text-align: left;
   direction: ltr
 }
-.hebrew[data-v-63506547] {
+.hebrew[data-v-ebaa04a4] {
   text-align: right;
   direction: rtl
 }
-body.full[data-v-63506547] {
+body.full[data-v-ebaa04a4] {
   background: url(/assets/images/bg1.jpg) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -50,16 +53,179 @@ body.full[data-v-63506547] {
   background-size: cover;
 }
 
-#fbloginimg[data-v-73b8294c] {
+#fbloginimg[data-v-bd071b5a] {
   height: 100px
 }
-#login_form #spinner[data-v-73b8294c] {
+#login_form #spinner[data-v-bd071b5a] {
   margin-top: 30px
 }
-.error[data-v-73b8294c] {
+.error[data-v-bd071b5a] {
   color: red;
   font-size: 1.2em
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.error[data-v-6131a1a7] {
+  color: red
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

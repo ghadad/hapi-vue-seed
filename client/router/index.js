@@ -13,6 +13,7 @@
         import Search from '../components/Search.vue'
         import Donate from '../components/Donate.vue'
         import Message from '../components/Message.vue'
+        import Props from '../components/Props.vue'
         let routes = [{
             path: '/home',
             name: 'Home',
@@ -38,6 +39,11 @@
             path: '/search',
             name: 'Search',
             component: Search
+          },
+          , {
+            path: '/admin/props',
+            name: 'Props',
+            component: Props
           },
           {
             path: '/login',

@@ -98,6 +98,47 @@
    }
  };
 
+ exports.saveProps = {
+   description: 'save  props ',
+   notes: 'props & attributes',
+   tags: ['docs', 'props'],
+   handler: function(request, reply) {
+     if(!request.auth.credentials.profile.admin) {
+         return reply('Not Admin ...').code(401);
+     }
+      let prm = [] ;
+      prm.push(JSON.stringify(request.payload.cat1));
+      prm.push(JSON.stringify(request.payload.cat2));
+      prm.push(JSON.stringify(request.payload.cat3));
+
+       this.db.run("update props set cat1 = ? ,cat2 = ? ,cat3 = ?",prm,function(err, res) {
+       if(err) return reply(Boom.badRequest(err));
+       return reply({success:true})
+     })
+   }
+ };
+
+ exports.props = {
+   description: 'get props ',
+   notes: 'props & attributes',
+   tags: ['docs', 'props'],
+   handler: function(request, reply) {
+       this.db.get("select * from props",function(err, res) {
+       if(err) return reply(Boom.badRequest(err));
+       if(res) {
+
+          let ret = {} ;
+          ret.cat1= JSON.parse(res.cat1 || '[]')
+
+          ret.cat2= JSON.parse(res.cat2 || '[]')
+          ret.cat3= JSON.parse(res.cat3 || '[]')
+           console.log(ret)
+          return reply(ret)
+       } else
+       return reply({cat1:[],cat2:[],cat3:[]})
+     })
+   }
+ };
  exports.search = {
    description: 'searching docs!',
    notes: 'searching docs',

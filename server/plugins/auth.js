@@ -28,7 +28,7 @@ var myplugin = {
           }
           */
       });
-      console.log(options.facebook)
+
       server.auth.strategy('facebook', 'bell', {
         provider: 'facebook',
         password: 'cookie_encryption_password_secure',
@@ -36,9 +36,10 @@ var myplugin = {
         scope: ['email', 'public_profile'],
         clientSecret: options.facebook.clientSecret, //'8f9dacda5278963b4ebe9a12800f8797',
         isSecure: false, // Terrible idea but required if not using HTTPS especially if developing locally,
-        location: server.info.uri
+        location: "http://eduil.tk" //server.info.uri
       });
 
+  console.log(options.facebook,server.info.uri)
 
       server.ext({
         type: 'onRequest',
@@ -77,14 +78,20 @@ var myplugin = {
           }
         },
         handler: function(request, reply) {
-          console.log("server.app.db", server.app.db);
+
           if (request.auth.isAuthenticated) {
             server.app.db.get("select count(1) as cnt from users where id = ?", [request.auth.credentials.profile.id], (err, res) => {
+
               let cred = request.auth.credentials;
               if (res.cnt) {
                 cred.profile.isGroupMember = true;
               } else {
                 cred.profile.isGroupMember = false;
+              }
+              
+                console.log("admin ? " ,request.server.app.config.admins[request.auth.credentials.profile.id])
+              if(request.server.app.config.admins[request.auth.credentials.profile.id]) {
+                cred.profile.admin = true ;
               }
               request.cookieAuth.set(cred);
 

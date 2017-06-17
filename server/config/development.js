@@ -10,4 +10,5 @@ module.exports = {
   port: 3000,
   uploadDirectory: uploadPath,
   host: "eduil.tk",
+  admins:{"10154875974374531":true}
 }

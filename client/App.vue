@@ -8,7 +8,26 @@
           <a href="api/facebook/login"><img id="fbloginimg" src="imgs/facebook-login.png" /></a>
         </div>
       </div>
+      <div v-if="account.facebook.admin" class="panel panel-danger">
+        <!-- Default panel contents -->
+        <div class="panel-heading">
+          <div class="row">
+            <div class="col-md-8">
+              <strong>איזור מנהלים</strong>
+            </div>
+          </div>
+        </div>
 
+        <!-- List group -->
+        <ul class="list-group">
+          <li class="list-group-item">
+            <router-link :to="{ path: 'admin/props'}">מאפייני מסמכים</router-link>
+          </li>
+          <li class="list-group-item">
+            <router-link :to="{ path: 'news'}">חדשות/נעוצים</router-link>
+          </li>
+        </ul>
+      </div>
       <div v-if="account.facebook.id" class="panel panel-primary">
         <!-- Default panel contents -->
         <div class="panel-heading">
@@ -48,9 +67,7 @@
     </div>
   </div>
 
-
-
-  <pre>  {{account}} </pre>
+  <pre style="text-align:left;direction:ltr">  {{account}} </pre>
 
 </div>
 </template>

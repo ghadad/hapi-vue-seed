@@ -20,5 +20,16 @@ module.exports = [{
     method: 'GET',
     path: '/api/docs/search',
     config: Controller.search
+  },
+  {
+    method: 'GET',
+    path: '/api/docs/props',
+    config: Controller.props
+  },
+
+  {
+    method: 'post',
+    path: '/api/docs/props',
+    config: Controller.saveProps
   }
 ];

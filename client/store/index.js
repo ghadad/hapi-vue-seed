@@ -11,7 +11,7 @@ import LocalStorage from "store";
 const state = {
   account: {
     facebook : {},
-    admin: false
+
   },
 }
 
@@ -22,7 +22,7 @@ const mutations = {
         LocalStorage.set("isauth", true)
         Vue.set(state, 'account', {
           facebook:account.facebook,
-          admin: false
+
         })
 
 },
@@ -30,7 +30,7 @@ clearauth(state) {
   LocalStorage.set("isauth", false)
   Vue.set(state, 'account', {
     facebook:{},
-    admin: false
+    
   })
 }
 }

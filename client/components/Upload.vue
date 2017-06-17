@@ -52,7 +52,7 @@ export default {
                        <div class="dz-error-mark"><i class="fa fa-close"></i></div>
                    </div>
                `,
-        acceptedFiles: "image/*,.doc,.docx,.pdf",
+        acceptedFiles: "image/*,.doc,.docx,.pdf,.pps,.ppt",
         dictDefaultMessage: "חץ על קליק ימני של העכבר קבצים כאן להעלאה",
         dictInvalidFileType: "לא ניתן להעלות סוג קובץ זה",
         dictFileTooBig: "הקובץ גדול מדי ({{filesize}}MiB). גודל מקסימלי הינו : {{maxFilesize}}MiB.",
@@ -63,15 +63,15 @@ export default {
         dictRemoveFile: "מחק קובץ",
         maxFilesize: 256 * 1000,
         removedfile: function(file) {
-          alert(JSON.stringify(file) + "removed")
+          //  alert(JSON.stringify(file) + "removed")
         },
         error: function(file, result) {
-          alert("error" + JSON.stringify(result))
-          alert("error" + JSON.stringify(file))
+          //  alert("error" + JSON.stringify(result))
+          //  alert("error" + JSON.stringify(file))
         },
         success: function(file, result) {
-          alert("finnish" + JSON.stringify(result))
-          alert("finnish" + JSON.stringify(file))
+          //  alert("finnish" + JSON.stringify(result))
+          //  alert("finnish" + JSON.stringify(file))
         },
       }
     }
@@ -104,4 +104,6 @@ export default {
 .error {
   color: red
 }
+</style>
+
 </style>

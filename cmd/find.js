@@ -6,8 +6,8 @@ const md5 = require("md5");
 const cp = require("cp");
 
 let sqlite3 = require("sqlite3");
-let db = new sqlite3.Database("../db/app.dev.db");
-var stmt = db.prepare("INSERT INTO docs (batch_id,path,filename,keys,creation_date,created_by)  VALUES (?,?,?,?,?,1)");
+let db = new sqlite3.Database("../db/app.prod.db");
+let  stmt = "" ;
 let Async = require("async");
 
 db.on("trace", function(log) {
@@ -31,11 +31,12 @@ const uploadDir = "/home/golanh/hapi-teachers/upload/dev";
 
 Async.waterfall([function(callback) {
       db.serialize(function() {
-        db.run("drop table docs;");
-        db.run("delete from sqlite_sequence where name='docs'");
+ //       db.run("drop table docs;");
+   //     db.run("delete from sqlite_sequence where name='docs'");
         db.run("create table docs (id integer primary key autoincrement , path text , filename text,keys text,batch_id text,created_by text,creation_date INTEGER,update_date INTEGER)", (err) => {
           callback(null, true)
         });
+	stmt = db.prepare("INSERT INTO docs (batch_id,path,filename,keys,creation_date,created_by)  VALUES (?,?,?,?,?,1)");
 
       });
 
