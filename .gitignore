@@ -1,7 +1,7 @@
 node_modules/
 secret/
-logs/
+logs/*
 data/
-cmd/allfil*
+scripts/allfil*
 db/
 upload/*/*

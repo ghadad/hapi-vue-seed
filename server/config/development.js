@@ -9,6 +9,9 @@ module.exports = {
   },
   port: 3000,
   uploadDirectory: uploadPath,
+  uploadPublicDirectory: "/upload/dev",
   host: "eduil.tk",
-  admins:{"10154875974374531":true}
+  admins: {
+    "10154875974374531": true
+  }
 }
