@@ -31,7 +31,8 @@ import Bootstrap from 'bootstrap/dist/js/bootstrap.min.js'
 import _ from 'lodash'
 Vue.prototype._ = _
 
-
+import Pagination from "./components/Pagination.vue"
+Vue.component('pagination', Pagination)
 Vue.config.debug = true
 import App from './App.vue'
 

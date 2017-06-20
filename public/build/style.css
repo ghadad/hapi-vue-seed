@@ -130,7 +130,16 @@ body.full[data-v-ebaa04a4] {
 }
 
 .tiny {
+  width: 120px
+}
+td.td_thumb {
+  max-width: 130px;
+  min-width: 130px;
   width: 130px
+}
+.tag {
+  font-size: 13px;
+  margin-left: 3px
 }
 
 

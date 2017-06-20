@@ -70,11 +70,14 @@
                });
 
              }
-             db.run("insert into docs (batch_id,path,filename,creation_date,created_by) values(?,?,?,?,?)", [batch_id, absdir, data.file.hapi.filename, creation_date, request.auth.credentials.profile.id], (err) => {
+             let defaultThumb = "imgs" + path.sep + "iconthumb" + path.extname(data.file.hapi.filename) + ".png" // returns '.html'
+             db.run("insert into docs (batch_id,path,filename,creation_date,created_by) values(?,?,?,?,?)", [batch_id, , absdir, data.file.hapi.filename, creation_date, request.auth.credentials.profile.id], (err) => {
                var ret = {
-                 absdir: absdir,
+                 batch_id: batch_id,
+                 thumb: (path.extname(data.file.hapi.filename).match(/(jpeg|jpg|png|bmp)$/i) ?
+                   path.resolve(request.server.app.config.uploadPublicDirectory, batch_id, "thumbs", data.file.hapi.filename) : defaultThumb),
                  filename: data.file.hapi.filename,
-                 headers: data.file.hapi.headers
+
                }
                cb(null, ret);
              });
@@ -84,8 +87,7 @@
          if (err) {
            reply(err)
          } else {
-           console.log(result);
-           reply(result)
+           reply(result[2])
          }
 
        });
@@ -186,17 +188,33 @@
        more_sql += " and created_by = $id ";
        prm.$id = request.auth.credentials.profile.id
      }
-     more_sql += " limit 100 "
+
+     // PAGES
+     let pageSize = request.query.pageSize || 100;
+
+     let currentPage = request.query.page || 1;
+     if (currentPage < 0) currentPage = 1;
+
+     more_sql += " limit " + pageSize
+     let offset = (currentPage - 1) * pageSize;
+     let offset_sql = " offset " + offset
+
+     console.log("more_sql", more_sql)
      Async.series([
          function(cb) {
-           db.get("select count(*) as cnt from docs where 1=1 " + more_sql, prm, function(err, result) {
+
+           db.get("select count(*) as cnt from docs where 1=1 " + more_sql + offset_sql, prm, function(err, result) {
              if (err) cb(err, null);
-             else
-               cb(null, result.cnt)
+             else {
+               if (result)
+                 cb(null, result.cnt)
+               else
+                 cb(null, 0)
+             }
            })
          },
          function(cb) {
-           db.all(sql + more_sql, prm, function(err, docs) {
+           db.all(sql + more_sql + offset_sql, prm, function(err, docs) {
              if (err) {
                cb(err, null)
              } else {
@@ -230,6 +248,9 @@
          if (err) reply(Boom.badRequest(err))
          else
            reply({
+             currentPage: currentPage,
+             pageSize: pageSize,
+             totalPages: Math.ceil(result[0] / pageSize),
              count: result[0],
              rows: result[1]
            });

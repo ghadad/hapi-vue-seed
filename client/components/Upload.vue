@@ -1,39 +1,75 @@
 <template>
 <div id="upload">
-  <h2>שתף קבצים</h2>
+  <h2 v-show="final">שתף קבצים <button class="btn btn-lg" @click="complete()">אשר וסיים</button>
+    <button class="btn btn-lg btn-danger">מחק</button>
+    batch_id : {{batch_id}}
+  </h2>
   <div class="form-group">
     <label for="description">שלב א' - תאור קצר</label>
     <input type="text" v-model="description" class="form-control" id="description" placeholder="תאור קצר - לפחות  10 מילים">
     <div class="error">{{descriptionError}} </div>
   </div>
-  <h3>תמיד נשמח לתיאור נרחב </h3>
-  <textarea></textarea>
+  <div class="text-center">
+    <button @click="saveBacth()" v-if="description && !descriptionError" class="btn btn-lg btn-primary">הבא</button>
+  </div>
+
+  <h3>תמיד נשמח לתיאור נרחב <button class="btn btn-sm" @click="showEditor=1">+</button> </h3>
+  <vue-editor v-if="showEditor" v-model="content"></vue-editor>
   <div v-show="description && !descriptionError">
     <h2>טעינת קבצים </h2>
-    <dropzone id="myVueDropzone" :preview-template="previewTemplate" url="/api/docs/upload" :use-custom-dropzone-options="true" :dropzone-options="dropzoneOptions" v-on:vdropzone-error="showSError">
+    <dropzone id="myVueDropzone" url="/api/docs/upload" :use-custom-dropzone-options="true" :dropzone-options="dropzoneOptions" v-on:vdropzone-error="showSError">
       <input type="hidden" name="batch_id" :value="batch_id">
     </dropzone>
   </div>
-
+  facebook
+  <div class="row" v-for="f in uploaded">
+    <div class="col-md-2"><img :src="f.thumb" /></div>
+    <div class="col-md-10">
+      {{f.filename}}
+      <input />
+    </div>
+  </div>
+  {{account}}
 </div>
 </template>
 
 <script>
 import Dropzone from 'vue2-dropzone';
 import Store from "../store"
+import {
+  VueEditor
+} from 'vue2-editor'
+
 export default {
 
   name: 'Upload',
   mounted() {
-    this.$router.push({
+    let vm = this;
+    vm.$http.get("api/docs/getbatchid").then(res => {
+      vm.batch_id = res.data.batch_id
+      vm.$http.get("api/docs/getbatch/" + vm.batch_id).then(res => {
+        vm.description = res.data.description
+        vm.content = res.data.content
 
-      query: {
-        batch_id: this.batch_id
-      }
-    });
+      }).catch(() => {
+
+      })
+    }).catch(() => {
+      alert("לא מצליח לקבל קוד אצווה")
+    })
+
+
   },
   data() {
+    let vm = this;
     return {
+      showEditor: 0,
+      customToolbar: [
+
+      ],
+      final: false,
+      batch_id: "",
+      uploaded: [],
       description: "",
 
       dropzoneOptions: {
@@ -46,6 +82,7 @@ export default {
                          <div class="dz-size"><span data-dz-size></span></div>
                          <div class="dz-filename"><span data-dz-name></span></div>
                        </div>
+
                        <div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>
                        <div class="dz-error-message"><span data-dz-errormessage></span></div>
                        <div class="dz-success-mark"><i class="fa fa-check"></i></div>
@@ -57,30 +94,50 @@ export default {
         dictInvalidFileType: "לא ניתן להעלות סוג קובץ זה",
         dictFileTooBig: "הקובץ גדול מדי ({{filesize}}MiB). גודל מקסימלי הינו : {{maxFilesize}}MiB.",
         maxFiles: 20,
-        addRemoveLinks: true,
+        //addRemoveLinks: true,
         addCancelLinks: true,
         dictCancelUpload: "בטל שיתוף",
         dictRemoveFile: "מחק קובץ",
         maxFilesize: 256 * 1000,
         removedfile: function(file) {
-          //  alert(JSON.stringify(file) + "removed")
+
         },
         error: function(file, result) {
           //  alert("error" + JSON.stringify(result))
           //  alert("error" + JSON.stringify(file))
         },
         success: function(file, result) {
-          //  alert("finnish" + JSON.stringify(result))
-          //  alert("finnish" + JSON.stringify(file))
+          console.log(result)
+          vm.uploaded.push(result)
         },
       }
     }
   },
   components: {
-    Dropzone
+    Dropzone,
+    VueEditor
   },
   methods: {
+    saveBacth() {
+      let vm = this;
+      vm.$http.post("api/docs/batch", {
+        description: vm.description,
+        content: vm.content,
+        batch_id: vm.batch_id
+      }).then(res => {}).catch(err => {
 
+      });
+    },
+    complete() {
+      let vm = this;
+      vm.$http.get("api/docs/complete", {
+        params: {
+          batch_id: vm.batch_id
+        }
+      }).then(res => {}).catch(err => {
+
+      })
+    },
     'showSError': function(err) {
       console.log(err)
     }
@@ -90,9 +147,6 @@ export default {
       if (this.description.split(/\s+/).length < 10 && this.description.length > 1) {
         return "נא כתבו תיאור איכותי עם לפחות 10 מילים ";
       }
-    },
-    batch_id: function() {
-      return this.account.facebook.id + "-" + Math.floor((new Date().getTime() / 1000))
     },
     account: () => {
       return Store.state.account
