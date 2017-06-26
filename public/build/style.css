@@ -1,4 +1,12 @@
 
+.pagination li.page {
+  cursor: pointer;
+}
+.active {
+  color: Blue;
+  font-weight: bold;
+}
+
 #dis-container[data-v-ebaa04a4] {
   margin-top: 70px;
 }
@@ -64,66 +72,18 @@ body.full[data-v-ebaa04a4] {
   font-size: 1.2em
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+.tiny {
+  width: 120px
+}
+td.td_thumb {
+  max-width: 130px;
+  min-width: 130px;
+  width: 130px
+}
+.tag {
+  font-size: 13px;
+  margin-left: 3px
+}
 
 .error[data-v-6131a1a7] {
   color: red

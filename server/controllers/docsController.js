@@ -29,7 +29,7 @@
      //return reply(request.payload)
      if (data.file) {
        var name = data.file.hapi.filename;
-       var batch_id = md5(request.payload.batch_id);
+       var batch_id = request.payload.batch_id;
        var absdir = path.resolve(request.server.app.config.uploadDirectory, batch_id);
        var thumbnsDir = path.resolve(absdir, "thumbs");
 
@@ -71,16 +71,25 @@
 
              }
              let defaultThumb = "imgs" + path.sep + "iconthumb" + path.extname(data.file.hapi.filename) + ".png" // returns '.html'
-             db.run("insert into docs (batch_id,path,filename,creation_date,created_by) values(?,?,?,?,?)", [batch_id, , absdir, data.file.hapi.filename, creation_date, request.auth.credentials.profile.id], (err) => {
-               var ret = {
-                 batch_id: batch_id,
-                 thumb: (path.extname(data.file.hapi.filename).match(/(jpeg|jpg|png|bmp)$/i) ?
-                   path.resolve(request.server.app.config.uploadPublicDirectory, batch_id, "thumbs", data.file.hapi.filename) : defaultThumb),
-                 filename: data.file.hapi.filename,
 
+
+             db.run("insert into docs (batch_id,path,filename,creation_date,created_by) values(?,?,?,?,?)", [batch_id, absdir, data.file.hapi.filename, creation_date, request.auth.credentials.profile.id], (err) => {
+               if (err) {
+                 return cb(err, null)
                }
-               cb(null, ret);
+               db.get("select seq from sqlite_sequence where name='docs'", (errseq, resseq) => {
+                 var ret = {
+                   batch_id: batch_id,
+                   id: resseq.seq,
+                   thumb: (path.extname(data.file.hapi.filename).match(/(jpeg|jpg|png|bmp)$/i) ?
+                     path.resolve(request.server.app.config.uploadPublicDirectory, batch_id, "thumbs", data.file.hapi.filename) : defaultThumb),
+                   filename: data.file.hapi.filename,
+
+                 }
+                 cb(null, ret);
+               })
              });
+
            });
          }
        ], function(err, result) {

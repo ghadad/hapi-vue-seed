@@ -7,7 +7,20 @@ const mkdirp = require("mkdirp");
 const md5 = require("md5");
 const async = require("async");
 let sqlite3 = require("sqlite3");
-let db = new sqlite3.Database("../db/app.prod.db");
+
+if (!process.env.BATCH_ENV) {
+  console.error("Please export BATCH_ENV variable !");
+  process.exit();
+}
+let env = process.env.BATCH_ENV;
+
+let config = {
+  uploadDir: "/home/golanh/hapi-teachers/upload/" + env,
+  db: new sqlite3.Database('/home/golanh/hapi-teachers/db/app.' + env + '.db')
+};
+
+
+let db = config.db;
 
 process.on('uncaughtException', function(err) {
   console.log('Caught exception: ' + err);
