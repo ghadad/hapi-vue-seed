@@ -1,12 +1,14 @@
 <template>
-<div id="search">
-  <form @submit.prevent class="form form-inline">
-    <div class="form-group">
-      <label><h2>חיפוש</h2></label>
-      <input type="search" class="form-control input-md" v-model="term" placeholder="">
-      <button class="btn btn-primary" @click="search('init')">חיפוש</button>
-    </div>
-  </form>
+<div id="search" class="container-fluid">
+  <div class="text-center">
+    <form @submit.prevent class="form form-inline">
+      <div class="form-group">
+
+        <input type="search" class="form-control input-lg" v-model="term" placeholder="">
+        <button class="btn btn-primary" @click="search('init')">חיפוש</button>
+      </div>
+    </form>
+  </div>
 
   <pagination :page="page" :totalPages="totalPages" :totalRows="totalRows" :displayPages="20" @setPage="(val) => { this.setPage(val)}"></pagination>
 
@@ -18,17 +20,27 @@
       <tr v-for="(r,index) in result.rows">
         <td class="td_thumb"><img v-if="r.thumb" :src="r.thumb" :class="'tiny'" /></td>
         <td style="">
-          <h3><span class="badge">{{index+1}}</span><a :href="'/api/docs/getfile/'+r.id"> {{r.filename}} </a></h3>
-          <div v-if="r.keys">תגיות :
-            <router-link v-for="k in r.keys" :to="{ name: 'Search', query: {term:k,tag:true,init:true}}">
-              <span class="tag label label-default">{{k}}</span>
-            </router-link>
+          <div class="row">
+            <div class="col-md-1">
+              <a target="_BLANK" :href="'https://facebook.com/' + r.created_by"><img class="img-responsive img-circle" :src="getUserPic(r.created_by)" /> {{r.facebook_name}}</a></div>
+            <div class="col-md-11">
+              <h3> <span class="badge">{{index+1}}</span><a :href="'/api/docs/getfile/'+r.id"> {{r.filename}} </a></h3>
+              <div v-if="r.keys">תגיות :
+                <router-link v-for="k in r.keys" :to="{ name: 'Search', query: {term:k,tag:true,init:true}}">
+                  <span class="tag label label-default">{{k}}</span>
+                </router-link>
+              </div>
+            </div>
           </div>
+
+
         </td>
 
       </tr>
     </tbody>
   </table>
+  <pagination :page="page" :totalPages="totalPages" :totalRows="totalRows" :displayPages="20" @setPage="(val) => { this.setPage(val)}"></pagination>
+
 </div>
 </template>
 <script>
@@ -74,6 +86,9 @@ export default {
     }
   },
   methods: {
+    getUserPic(id) {
+      return 'http://graph.facebook.com/v2.9/' + id + '/picture'
+    },
     setPage(p) {
 
       this.page = p;
@@ -93,7 +108,7 @@ export default {
       }
       vm.doSearch = 1;
       vm.result = [];
-      vm.$http.get("api/docs/search", {
+      vm.$http.get("/api/docs/search", {
         params: {
           term: vm.term,
           tag: vm.tag,

@@ -76,7 +76,7 @@ export default {
     get() {
       let vm = this;
       vm.result = [];
-      vm.$http.get("api/docs/props").then(res => {
+      vm.$http.get("/api/docs/props").then(res => {
         console.log(res.data)
         vm.$set(vm, 'docsProps', res.data);
       }).catch(err => {
@@ -88,7 +88,7 @@ export default {
       let vm = this;
       let prm = {};
 
-      vm.$http.post("api/docs/props", this.docsProps).then(res => {
+      vm.$http.post("/api/docs/props", this.docsProps).then(res => {
         console.log(res);
       }).catch(err => {
         vm.err = err;

@@ -1,74 +1,62 @@
 <template>
 <div id="container" class="container-fluid" @mousemove="idleReset">
-  <h2><router-link :to="{ path: '/', params: {} }">מורות משקיעות</router-link></h2>
-  <div class="row">
-    <div class="col-md-2">
-      <div v-if="!account.facebook.id" class="panel panel-default">
-        <div class="panel-body">
-          <a href="api/facebook/login"><img id="fbloginimg" src="imgs/facebook-login.png" /></a>
-        </div>
-      </div>
-      <div v-if="account.facebook.admin" class="panel panel-danger">
-        <!-- Default panel contents -->
-        <div class="panel-heading">
-          <div class="row">
-            <div class="col-md-8">
-              <strong>איזור מנהלים</strong>
-            </div>
-          </div>
-        </div>
 
-        <!-- List group -->
-        <ul class="list-group">
-          <li class="list-group-item">
-            <router-link :to="{ path: 'admin/props'}">מאפייני מסמכים</router-link>
-          </li>
-          <li class="list-group-item">
-            <router-link :to="{ path: 'news'}">חדשות/נעוצים</router-link>
+  <nav class="navbar navbar-default navbar-fixed-top topnav" role="navigation">
+    <div class="container topnav">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <ul class="nav navbar-nav navbar-right" v-show="account.facebook.id">
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                <img id="profile_pic" class="img-responsive img-circle" :src="'https://graph.facebook.com/v2.9/'+account.facebook.id+'/picture'" />
+                <strong> {{account.facebook.displayName}} </strong>
+            <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+
+              <li v-if="account.facebook.admin">
+                <router-link :to="{ path: 'admin/props'}">מאפייני מסמכים :מנהלים בלבד</router-link>
+              </li>
+              <li v-if="account.facebook.admin">
+                <router-link :to="{ path: 'news'}">חדשות/נעוצים :מנהלים בלבד</router-link>
+              </li>
+              <li>
+                <router-link :to="{ path: 'message'}"> <i class="glyphicon glyphicon-envelope"></i> שלח הודעה למנהלי האתר </router-link>
+              </li>
+              <li><a v-show="account.facebook.id" href="/api/facebook/logout"> <i class="glyphicon glyphicon-log-out"></i> יציאה מהאתר </a></li>
+            </ul>
           </li>
         </ul>
+        <a v-show="account.facebook.id" class="navbar-brand topnav" href="#"> בית</a>
+        <a v-show="!account.facebook.id" class="navbar-brand topnav" href="#">מחסן היצירות של מורות משקיעות</a>
       </div>
-      <div v-if="account.facebook.id" class="panel panel-primary">
-        <!-- Default panel contents -->
-        <div class="panel-heading">
-          <div class="row">
-            <div class="col-md-4"> <img :src="userPic"></div>
-            <div class="col-md-8">
-              <div> משתמש מחובר </div>
-              <div><strong>{{account.facebook.displayName}} </strong></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- List group -->
-        <ul class="list-group">
-          <li class="list-group-item">
-            <router-link :to="{ path: 'upload'}">העלאת מסמכים</router-link>
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul v-if="account.facebook.id" class="nav navbar-nav navbar-right">
+          <li>
+            <router-link :to="{ path: 'myfiles'}"> המסמכים שלי &nbsp;<i class="glyphicon glyphicon-folder-open"></i></router-link>
           </li>
-          <li class="list-group-item">
-            <router-link :to="{ path: 'myfiles'}">המסמכים שלי</router-link>
+          <li>
+            <router-link :to="{ path: 'upload'}"> שיתוף קבצים <i class="glyphicon glyphicon-cloud-upload"></i></router-link>
+          </li>
+          <li>
+            <router-link :to="{ path: 'search'}"> חיפוש <i class="glyphicon glyphicon-search"></i></router-link>
+          </li>
+          <li>
+            <router-link :to="{ path: 'donate'}"> תרומה <img style="height:18px" src="/img/donate.png"></router-link>
           </li>
 
-          <li class="list-group-item">
-            <router-link :to="{ path: 'search'}">חיפוש</router-link>
-          </li>
-          <li class="list-group-item">
-            <router-link :to="{ path: 'donate'}">תרומה</router-link>
-          </li>
-          <li class="list-group-item">
-            <router-link :to="{ path: 'message'}">שלח הודעה למנהלי האתר</router-link>
-          </li>
-          <li class="list-group-item"> <a v-show="account.facebook.id" href="api/facebook/logout">יציאה מהאתר</a></li>
+
         </ul>
+
       </div>
+
     </div>
-    <div class="col-md-10">
-      <router-view></router-view>
-    </div>
+
+  </nav>
+  <div id="main-router-view" class="container-fluid">
+    <router-view></router-view>
   </div>
-
-  <pre style="text-align:left;direction:ltr">  {{account}} </pre>
-
+  <!--pre style="text-align:left;direction:ltr">  {{account}} </pre-->
 </div>
 </template>
 
@@ -145,15 +133,13 @@ export default {
 
       return "http://graph.facebook.com/v2.9/" + this.account.facebook.id + "/picture"
     }
-
-
   }
 }
 </script>
 
 <style scoped>
-#dis-container {
-  margin-top: 70px;
+#main-router-view {
+  margin-top: 90px
 }
 
 #fbloginimg {
@@ -211,5 +197,16 @@ body.full {
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+}
+
+#profile_pic {
+  height: 40px;
+  display: inline
+}
+
+a.navbar-brand.topnav,
+.navbar-nav>li>a {
+
+  line-height: 34px
 }
 </style>

@@ -39,7 +39,7 @@ var myplugin = {
         location: "http://eduil.tk" //server.info.uri
       });
 
-  console.log(options.facebook,server.info.uri)
+      console.log(options.facebook, server.info.uri)
 
       server.ext({
         type: 'onRequest',
@@ -88,10 +88,10 @@ var myplugin = {
               } else {
                 cred.profile.isGroupMember = false;
               }
-              
-                console.log("admin ? " ,request.server.app.config.admins[request.auth.credentials.profile.id])
-              if(request.server.app.config.admins[request.auth.credentials.profile.id]) {
-                cred.profile.admin = true ;
+
+              console.log("admin ? ", request.server.app.config.admins[request.auth.credentials.profile.id])
+              if (request.server.app.config.admins[request.auth.credentials.profile.id]) {
+                cred.profile.admin = true;
               }
               request.cookieAuth.set(cred);
 

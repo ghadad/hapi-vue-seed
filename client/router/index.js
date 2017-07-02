@@ -14,6 +14,8 @@
         import Donate from '../components/Donate.vue'
         import Message from '../components/Message.vue'
         import Props from '../components/Props.vue'
+        import Docspost from '../components/Docspost.vue'
+
         let routes = [{
             path: '/home',
             name: 'Home',
@@ -28,6 +30,10 @@
             name: 'Donate',
             component: Donate
           }, {
+            path: '/docspost',
+            name: 'Docspost',
+            component: Docspost
+          }, {
             path: '/message',
             name: 'Message',
             component: Message
@@ -39,8 +45,7 @@
             path: '/search',
             name: 'Search',
             component: Search
-          },
-          , {
+          }, , {
             path: '/admin/props',
             name: 'Props',
             component: Props

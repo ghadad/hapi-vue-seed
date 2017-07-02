@@ -70,7 +70,7 @@
                });
 
              }
-             let defaultThumb = "imgs" + path.sep + "iconthumb" + path.extname(data.file.hapi.filename) + ".png" // returns '.html'
+             let defaultThumb = "/imgs" + path.sep + "iconthumb" + path.extname(data.file.hapi.filename) + ".png" // returns '.html'
 
 
              db.run("insert into docs (batch_id,path,filename,creation_date,created_by) values(?,?,?,?,?)", [batch_id, absdir, data.file.hapi.filename, creation_date, request.auth.credentials.profile.id], (err) => {
@@ -181,7 +181,7 @@
      //this.db.all("Select * from docs where id=?",["71c1dbe97d4fc8151f02b954d8026b0d"],function(err,docs){
      const db = this.db;
      let prm = {};
-     let sql = "Select * from docs where 1=1 ";
+     let sql = "Select docs.*,users.name  from docs left  join users on docs.created_by = users.id where 1=1 ";
      let more_sql = "";
      console.log(request.query);
      if (request.query.term) {
@@ -230,7 +230,7 @@
                let result = []
                docs.forEach(d => {
 
-                 let defaultThumb = "imgs" + path.sep + "iconthumb" + path.extname(d.filename) + ".png" // returns '.html'
+                 let defaultThumb = "/imgs" + path.sep + "iconthumb" + path.extname(d.filename) + ".png" // returns '.html'
 
 
                  result.push({
@@ -238,6 +238,10 @@
                    id: d.id,
                    md5: d.md5,
                    filename: d.filename,
+                   batch_id: d.batch_id,
+                   created_by: d.created_by,
+                   facebook_name: d.name,
+                   facebook_pic_url: "http://graph.facebook.com/v2.9/" + d.created_by + "/picture",
                    keys: JSON.parse(d.keys),
                    pathurl: path.resolve(request.server.app.config.uploadPublicDirectory, d.batch_id, d.filename),
                    thumb: (d.filename.match(/(jpeg|jpg|png|bmp)$/i) ?

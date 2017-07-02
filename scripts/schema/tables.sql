@@ -1,5 +1,5 @@
 drop table users ;
-create table users (id number primary key ,
+create table users (id text primary key ,
     name text ,
     email text ,isadmin boolean);
 
