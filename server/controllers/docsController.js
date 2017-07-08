@@ -137,8 +137,8 @@
      prm.push(JSON.stringify(request.payload.cat1));
      prm.push(JSON.stringify(request.payload.cat2));
      prm.push(JSON.stringify(request.payload.cat3));
-
-     this.db.run("update props set cat1 = ? ,cat2 = ? ,cat3 = ?", prm, function(err, res) {
+     console.log("PRM : " ,prm)
+     this.db.run("update props set cat1 = ? ,cat2 = ? ,cat3 = ?", prm, function(err) {
        if (err) return reply(Boom.badRequest(err));
        return reply({
          success: true
@@ -158,7 +158,6 @@
 
          let ret = {};
          ret.cat1 = JSON.parse(res.cat1 || '[]')
-
          ret.cat2 = JSON.parse(res.cat2 || '[]')
          ret.cat3 = JSON.parse(res.cat3 || '[]')
          console.log(ret)
@@ -244,6 +243,7 @@
                    facebook_pic_url: "http://graph.facebook.com/v2.9/" + d.created_by + "/picture",
                    keys: JSON.parse(d.keys),
                    pathurl: path.resolve(request.server.app.config.uploadPublicDirectory, d.batch_id, d.filename),
+                   enlarge: (d.filename.match(/(jpeg|jpg|png|bmp)$/i) ? true :false ),
                    thumb: (d.filename.match(/(jpeg|jpg|png|bmp)$/i) ?
                      path.resolve(request.server.app.config.uploadPublicDirectory, d.batch_id, "thumbs", d.filename) : defaultThumb),
 

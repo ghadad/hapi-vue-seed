@@ -25,3 +25,4 @@ CREATE TABLE props (cat1 text ,cat2 text ,cat3 text) ;
 
 drop table batch ;
 CREATE TABLE batch (id integer primary key ,seq number) ;
+insert into props values('[]','[]','[]');

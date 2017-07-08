@@ -7,6 +7,8 @@ const mkdirp = require("mkdirp");
 const md5 = require("md5");
 const async = require("async");
 let sqlite3 = require("sqlite3");
+const sharp = require("sharp");
+
 
 if (!process.env.BATCH_ENV) {
   console.error("Please export BATCH_ENV variable !");
@@ -28,13 +30,31 @@ process.on('uncaughtException', function(err) {
 
 
 db.on("trace", function(log) {
-  console.log(log)
+ // console.log(log)
 });
 
 let data = {};
 
+
 db.all("select * from docs", function(err, files) {
-  async.each(files, (f, callback) => {
+      files.forEach((f) => { 
+      if (f.filename.match(/(jpg|jpeg|png|bmp|gif|svg)$/i)) {
+      let imageFullname = path.resolve(f.path, f.filename);
+      let thumbDir = path.resolve(f.path, "thumbs")
+      let thumbFullname = path.resolve(f.path, "thumbs", f.filename)
+      if (!fs.existsSync(thumbDir)) {
+        mkdirp.sync(thumbDir)
+      }
+       sharp(imageFullname)
+        .resize(200, 200)
+        .toFile(thumbFullname, function(err) {
+         	if(err) console.log(err);
+		console.log(imageFullname,thumbFullname);
+        });
+
+
+}})
+  async.each([], (f, callback) => {
     if (f.filename.match(/(jpg|jpeg|png|bmp|gif|svg)$/i)) {
       let imageFullname = path.resolve(f.path, f.filename);
       let thumbDir = path.resolve(f.path, "thumbs")
@@ -42,18 +62,16 @@ db.all("select * from docs", function(err, files) {
       if (!fs.existsSync(thumbDir)) {
         mkdirp.sync(thumbDir)
       }
-      console.log(imageFullname, thumbFullname);
       Jimp.read(imageFullname).then(function(img) {
+	console.log(imageFullname , thumbFullname);
         img.resize(256, 256) // resize
           .quality(60) // set JPEG quality
           .write(thumbFullname); // save
-        callback();
       }).catch(function(err) {
-        console.error(err);
         callback(err);
-      });
+      })
     }
   }, function done(err) {
-    console.log(err)
+    if(err) console.log(err)
   });
 });

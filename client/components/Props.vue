@@ -1,5 +1,5 @@
 <template>
-<div id="props">
+<div id="props" class="fixed-content container-fluid">
   <h2>ניהול מאפיינים/תגיות למסמכים <button @click="save()" class="btn btn-primary btn-lg">שמור בחירה</button></h2>
   <table class="table">
     <thead>
@@ -69,7 +69,8 @@ export default {
 
     },
     addProp(category, p) {
-      console.log(this.docsProps)
+
+      if (!p) return false;
       this.docsProps[category].push(p)
       this[category + "prop"] = ""
     },

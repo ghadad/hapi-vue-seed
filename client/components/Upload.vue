@@ -1,5 +1,5 @@
 <template>
-<div id="upload" class="container-fluid">
+<div id="upload">
   <div class="row">
     <div class="col-md-6">
       <h2 v-show="1">  קוד אוגדן : {{batch_id}} <button class="hide btn btn-lg" @click="complete()">אשר וסיים</button>
@@ -31,8 +31,8 @@
       <i class="glyphicon glyphicon-resize-small"></i>
     </button>
    </h3>
-        <div style="height:100px;overflow:auto;" v-show="!showEditor" v-html="content"></div>
-        <vue-editor v-if="showEditor" :editorToolbar="customToolbar" v-model="content"></vue-editor>
+        <div style="height:300px;overflow:auto;background:white " v-show="!showEditor" v-html="content"></div>
+        <vue-editor style="background:white" v-if="showEditor" :editorToolbar="customToolbar" v-model="content"></vue-editor>
       </div>
     </div>
     <div class="col-md-6">
@@ -147,7 +147,7 @@ export default {
 
       })
     }).catch(() => {
-      alert("לא מצליח לקבל קוד אצווה")
+      alert("לא מצליח לייצר קוד אוגדן ")
     })
 
 
@@ -155,6 +155,7 @@ export default {
   data() {
     let vm = this;
     return {
+      content: "",
       spin: false,
       docsProps: {},
       deleteGroupLevel: 0,
@@ -343,4 +344,13 @@ span.label {
 .cats.well {
   margin-bottom: 2px
 }
+</style>
+ght: 3px;
+  margin-bottom: 3px;
+}
+
+.cats.well {
+  margin-bottom: 2px
+}
+#upload {margin-top:80px}
 </style>
