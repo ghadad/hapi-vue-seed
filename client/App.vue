@@ -1,7 +1,8 @@
 <template>
-<div id="container" @mousemove="idleReset">
+<div style="margin-top: 90px;" class="container-fluid" @mousemove="idleReset">
 
   <sidebar :account="account"></sidebar>
+
   <router-view></router-view>
 
   <!--pre style="text-align:left;direction:ltr">  {{account}} </pre-->
@@ -91,9 +92,10 @@ export default {
 </script>
 
 <style scoped>
-.fixed-content {
-  margin-top: 90px
+body {
+  margin-top: 90px;
 }
+
 
 #fbloginimg {
   width: 100%
@@ -147,7 +149,6 @@ code {
 }
 
 body.full {
-  background: url(/assets/images/bg1.jpg) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;

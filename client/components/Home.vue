@@ -49,6 +49,7 @@ export default {
   }
 }
 </script>
+
 <style scoped>
 .intro-message {
   text-align: center;

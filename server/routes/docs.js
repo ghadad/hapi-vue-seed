@@ -119,6 +119,19 @@ module.exports = [{
   },
   {
     method: 'get',
+    path: '/api/docs/myfolders',
+    handler: function(request, reply) {
+      let db = this.db;
+      db.get("select * from  docs_group where created_by= ?", [request.auth.credentials.profile.id], function(err, result) {
+        if (err) {
+          return reply("Failed to retreive batch id in complete upload").code(401);
+        }
+        return reply({folders:result})
+      })
+    }
+  },
+  {
+    method: 'get',
     path: '/api/docs/complete',
     handler: function(request, reply) {
       let db = this.db;
@@ -127,12 +140,12 @@ module.exports = [{
           return reply("Failed to retreive batch id in complete upload").code(401);
         }
         if (result) {
-          db.run("insert into batch values(?,?)", [request.auth.credentials.profile.id, result.seq + 1], (err, res) => {
-
+          db.run("update  batch  set seq = ?  where id =  ? ", [result.seq + 1,request.auth.credentials.profile.id], (err, res) => {
+                return reply({success:true});
           })
         } else {
           db.run("insert into batch values(?,?)", [request.auth.credentials.profile.id, 1], (err, res) => {
-
+            return reply({success:true});
           })
         }
       })

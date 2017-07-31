@@ -7,16 +7,11 @@
   font-weight: bold;
 }
 
-.fixed-content[data-v-ebaa04a4] {
-  margin-top: 90px
+body[data-v-ebaa04a4] {
+  margin-top: 90px;
 }
 #fbloginimg[data-v-ebaa04a4] {
   width: 100%
-}
-.nav>li>a[data-v-ebaa04a4] {
-  position: relative;
-  display: block;
-  padding-right: 30px;
 }
 pre[data-v-ebaa04a4] {
   font-size: 90%;
@@ -59,20 +54,24 @@ code[data-v-ebaa04a4] {
   direction: rtl
 }
 body.full[data-v-ebaa04a4] {
-  background: url(/assets/images/bg1.jpg) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
 }
-#profile_pic[data-v-ebaa04a4] {
+
+.nav>li>a[data-v-6fad1826] {
+  position: relative;
+  display: block;
+  padding-right: 30px;
+}
+a.navbar-brand.topnav[data-v-6fad1826],
+.navbar-nav>li>a[data-v-6fad1826] {
+  line-height: 34px
+}
+#profile_pic[data-v-6fad1826] {
   height: 40px;
   display: inline
-}
-a.navbar-brand.topnav[data-v-ebaa04a4],
-.navbar-nav>li>a[data-v-ebaa04a4] {
-
-  line-height: 34px
 }
 
 .intro-message[data-v-10d615f6] {
@@ -262,6 +261,7 @@ td.td_profile {
 td.td_file h4 {
   margin-top: 0
 }
+
 
 
 

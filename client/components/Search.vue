@@ -1,65 +1,68 @@
 <template>
-<div id="search" class="fixed-content container-fluid">
-  <div class="text-center">
-    <form @submit.prevent class="form form-inline">
-      <div class="form-group">
+<div id="search" class="row">
+  <div class="col-md-12">
+    <div class="text-center">
+      <form @submit.prevent class="form form-inline">
+        <div class="form-group">
 
-        <input type="search" class="form-control input-lg" v-model="term" placeholder="">
-        <button class="btn btn-primary" @click="search('init')">חיפוש</button>
-      </div>
-    </form>
-  </div>
-
-  <pagination :page="page" :totalPages="totalPages" :totalRows="totalRows" :displayPages="20" @setPage="(val) => { this.setPage(val)}"></pagination>
-
-  <table class="table table-striped">
-    <thead>
-      <td></td>
-    </thead>
-    <tbody>
-      <tr v-for="(r,index) in result.rows">
-        <td class="td_thumb"><a type="button" data-toggle="modal" @click="setPicModal(r)" data-target="#myModal">
-           <img :class="{'enlarge':r.enlarge}" v-if="r.thumb" :src="r.thumb" /></a></td>
-        <td class="td_profile text-center">
-          <div class="text-center">
-            <a target="_BLANK" :href="'https://facebook.com/' + r.created_by">
-              <div> </div>
-              <div><img class="img-circle" :src="getUserPic(r.created_by)"></div>
-              <div>{{r.facebook_name}}</div>
-            </a>
-          </div>
-        </td>
-        <td class="td_download text-center">
-          <a :href="'/api/docs/getfile/'+r.id">  <i class="download_thumb glyphicon glyphicon-download"></i>
-          <br />הורדה </a></td>
-        <td class="td_file">
-
-          <h4> <span class="badge">{{page*pageSize+index+1}}</span><a :href="'/api/docs/getfile/'+r.id"> {{r.filename}} </a></h4>
-          <div class="tags" v-if="r.keys">תגיות :
-            <router-link v-for="k in r.keys" :to="{ name: 'Search', query: {term:k,tag:true,init:true}}">
-              <span class="tag label label-default">{{k}}</span>
-            </router-link>
-          </div>
-        </td>
-
-      </tr>
-    </tbody>
-  </table>
-  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel">{{modal.title}}</h4>
+          <input type="search" class="form-control input-lg" v-model="term" placeholder="">
+          <button class="btn btn-primary" @click="search('init')">חיפוש</button>
         </div>
-        <div class="modal-body">
-          <img :src="modal.picUrl">
+      </form>
+    </div>
+
+    <pagination :page="page" :totalPages="totalPages" :totalRows="totalRows" :displayPages="20" @setPage="(val) => { this.setPage(val)}"></pagination>
+
+    <table class="table table-striped">
+      <thead>
+        <td></td>
+      </thead>
+      <tbody>
+        <tr v-for="(r,index) in result.rows">
+          <td class="td_index"><span class="badge">{{page*pageSize+index+1}}</span></td>
+          <td class="td_thumb"><a type="button" data-toggle="modal" @click="setPicModal(r)" data-target="#myModal">
+           <img :class="{'enlarge':r.enlarge}" v-if="r.thumb" :src="r.thumb" /></a></td>
+          <td class="td_profile text-center">
+            <div class="text-center">
+              <a target="_BLANK" :href="'https://facebook.com/' + r.created_by">
+                <div> </div>
+                <div><img class="img-circle" :src="getUserPic(r.created_by)"></div>
+                <div>{{r.facebook_name}}</div>
+              </a>
+            </div>
+          </td>
+          <td class="td_download text-center">
+            <a :href="'/api/docs/getfile/'+r.id">  <i class="download_thumb glyphicon glyphicon-download"></i>
+          <br />הורדה </a></td>
+          <td class="td_file">
+            <h6> אוגדן :<router-link :to="{path:'folder',query:{batch_id:r.batch_id}}">אוגדן</router-link></h6>
+            <h5> <a :href="'/api/docs/getfile/'+r.id"> {{r.filename}} </a></h5>
+            <div class="tags" v-if="r.keys">תגיות :
+              <router-link v-for="k in r.keys" :to="{ name: 'Search', query: {term:k,tag:true,init:true}}">
+                <span class="tag label label-default">{{k}}</span>
+              </router-link>
+            </div>
+          </td>
+
+        </tr>
+      </tbody>
+    </table>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">{{modal.title}}</h4>
+          </div>
+          <div class="modal-body">
+            <img :src="modal.picUrl">
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <pagination :page="page" :totalPages="totalPages" :totalRows="totalRows" :displayPages="20" @setPage="(val) => { this.setPage(val)}"></pagination>
+    <pagination :page="page" :totalPages="totalPages" :totalRows="totalRows" :displayPages="20" @setPage="(val) => { this.setPage(val)}"></pagination>
 
+  </div>
 </div>
 </template>
 <script>
@@ -228,6 +231,12 @@ td.td_profile {
   min-width: 60px;
   width: 60px;
   max-width: 75px;
+}
+
+.td_index {
+  min-width: 50px;
+  width: 50px;
+  max-width: 65px;
 }
 
 .enlarge {

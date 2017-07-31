@@ -1,11 +1,8 @@
 <template>
 <div id="upload">
-  <div class="row">
+  <div class="row-fluid">
     <div class="col-md-6">
-      <h2 v-show="1">  קוד אוגדן : {{batch_id}} <button class="hide btn btn-lg" @click="complete()">אשר וסיים</button>
-
-
-
+      <h2 v-show="1">  קוד אוגדן : {{batch_id}} <button class="btn btn-lg" @click="complete()">פרסם אוגדן</button>
   <button @click="saveBacth()" v-if="description && !descriptionError" class="btn btn-lg btn-primary">שמור</button>
   <button class="btn btn-lg btn-primary">אוגדן חדש</button>
   <button class="btn btn-lg btn-danger" @click="deleteGroupLevel=1" v-show="deleteGroupLevel==0">מחק אוגדן</button>
@@ -18,9 +15,9 @@
       </div>
       <div class="form-group">
         <h4>נא תייג את האוגדן עם המאפיינים הבאים</h4>
-        <div class="cats well well-sm">קטגוריה 1:<span class="label label-default" v-for="t in docsProps.cat1">{{t}}</span></div>
-        <div class="cats well well-sm">קטגוריה 2 :<span class="label label-default" v-for="t in docsProps.cat2">{{t}}</span></div>
-        <div class="cats well well-sm">קטגוריה 3:<span class="label label-default" v-for="t in docsProps.cat3">{{t}}</span></div>
+        <div class="cats well well-sm">קטגוריה 1:<span @click="toggleTag('cat1',$event)" class="label" :class="getClass('cat1',t)" v-for="t in docsProps.cat1" :key="t">{{t}}</span></div>
+        <div class="cats well well-sm">קטגוריה 2 :<span @click="toggleTag('cat2',$event)" class="label" :class="getClass('cat2',t)" v-for="t in docsProps.cat2" :key="t">{{t}}</span></div>
+        <div class="cats well well-sm">קטגוריה 3:<span @click="toggleTag('cat3',$event)" class="label" :class="getClass('cat3',t)" v-for="t in docsProps.cat3" :key="t">{{t}}</span></div>
       </div>
       <div class="alert alert-info">
         <h3>תאור נרחב <small>כאן תוכלו להוסיף תוכן חופשי , לינקים לסרטונים וכו' ...</small>
@@ -65,6 +62,7 @@
       </div>
     </div>
   </div>
+  <pre>{{docProps||json}}</pre>
 </div>
 </template>
 <script>
@@ -143,6 +141,7 @@ export default {
         vm.description = res.data.docs_group.description
         vm.content = res.data.docs_group.content;
         vm.docs = res.data.docs;
+
       }).catch(() => {
 
       })
@@ -155,6 +154,11 @@ export default {
   data() {
     let vm = this;
     return {
+      docProps: {
+        cat1: {},
+        cat2: {},
+        cat3: {}
+      },
       content: "",
       spin: false,
       docsProps: {},
@@ -193,6 +197,7 @@ export default {
         dictCancelUpload: "בטל שיתוף",
         dictRemoveFile: "מחק קובץ",
         maxFilesize: 256 * 1000,
+
         addedfile: function(file) {
           vm.spin = true;
         },
@@ -217,6 +222,44 @@ export default {
     VueEditor
   },
   methods: {
+    toggleTag(g, event) {
+      let vm = this;
+      let real = event.currentTarget.innerText;
+      let prop = real.replace(/\s/g, '');
+      let ff = false;
+      if (!vm.docProps[g][prop]) {
+        vm.$set(vm.docProps[g], prop, {
+          status: false,
+          real: real
+        });
+        ff = true;
+      }
+      vm.$set(vm.docProps[g], prop, {
+        status: ff,
+        real: real
+      });
+      console.log(vm.docProps.cat1)
+    },
+    getClass(g, p) {
+      let vm = this;
+      p = p.replace(/\s/g, '')
+      if (vm.docProps[g][p] && vm.docProps[g][p].status) return "label-primary";
+      else
+        return "label-default"
+    },
+    extractProps() {
+      let retVal = {
+        cat1: [],
+        cat2: [],
+        cat3: []
+      };
+      ['cat1', 'cat2', 'cat3'].forEach(c => {
+        Object.keys(this.docProps[c]).forEach(p => {
+          retVal[c].push(this.docProps[c][p].real)
+        })
+      })
+      return retVal;
+    },
     deleteGroup(level) {
       let vm = this;
       vm.deleteGroupLevel = level;
@@ -248,16 +291,20 @@ export default {
     },
     saveBacth() {
       let vm = this;
+      let props = vm.extractProps();
+      console.log("props:", props)
       vm.$http.post("api/docs/batch", {
         description: vm.description,
         content: vm.content,
-        batch_id: vm.batch_id
+        batch_id: vm.batch_id,
+        props: props
       }).then(res => {}).catch(err => {
 
       });
     },
     complete() {
       let vm = this;
+
       vm.$http.get("api/docs/complete", {
         params: {
           batch_id: vm.batch_id

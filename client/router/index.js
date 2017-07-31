@@ -15,6 +15,8 @@
         import Message from '../components/Message.vue'
         import Props from '../components/Props.vue'
         import Docspost from '../components/Docspost.vue'
+        import Folder from '../components/Folder.vue'
+
 
         let routes = [{
             path: '/home',
@@ -61,16 +63,17 @@
             path: '/myfiles',
             name: 'myfiles',
             component: Myfiles,
-            meta: {
-              noAuth: true
-            }
+
+          }, {
+            path: '/folder',
+            name: 'folder',
+            component: Folder,
+
           }, {
             name: 'notfound',
             path: '/notfound',
             component: Notfound,
-            meta: {
-              noAuth: true
-            }
+
           }
         ];
 

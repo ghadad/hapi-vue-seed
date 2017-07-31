@@ -1,11 +1,14 @@
 <template>
 <div id="search" class="fixed-content container-fluid">
-  <div class="text-center">
+  <div class="">
     <form @submit.prevent class="form form-inline">
       <div class="form-group">
 
+        <button class="btn btn-info btn-lg" @click="getMyFolders()">האוגדנים שלי</button>
+      </div>
+      <div class="form-group">
         <input type="search" class="form-control input-lg" v-model="term" placeholder="">
-        <button class="btn btn-primary" @click="search()">חיפוש</button>
+        <button class="btn btn-primary btn-lg" @click="search()">חיפוש</button>
       </div>
     </form>
   </div>
@@ -130,6 +133,14 @@ export default {
 
       this.page = p;
       this.search();
+    },
+    getMyFolders() {
+      let vm = this;
+      vm.$http.get("/api/docs/myfolders").then(res => {
+        vm.folders = res.data;
+      }).catch(err => {
+        vm.err = err;
+      })
     },
     search(initQ) {
       let vm = this;
