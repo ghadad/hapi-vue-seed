@@ -41,6 +41,7 @@
       </div>
       <div class="alert alert-info">
         <h4>הקבצים שהועלו לאוגדן</h4>
+
         <div v-show="!docs.length" class="well well-sm">עדיין לא העלת קבצים לאוגדן</div>
         <table class="table table-borderd">
           <tr class="list-group" v-for="(f,index) in docs">
@@ -135,20 +136,34 @@ export default {
       vm.err = err;
     });
 
-    vm.$http.get("/api/docs/getbatchid").then(res => {
-      vm.batch_id = res.data.batch_id
+    if (!vm.$route.query.batch_id) {
+      vm.$http.get("/api/docs/getbatchid").then(res => {
+        vm.batch_id = res.data.batch_id
+        vm.$http.get("/api/docs/getbatch/" + vm.batch_id).then(res => {
+          vm.description = res.data.docs_group.description
+          vm.content = res.data.docs_group.content;
+          vm.docs = res.data.docs;
+
+        }).catch(() => {
+
+        })
+      }).catch(() => {
+        alert("לא מצליח לייצר קוד אוגדן ")
+      })
+    } else {
+      vm.batch_id = vm.$route.query.batch_id
+
       vm.$http.get("/api/docs/getbatch/" + vm.batch_id).then(res => {
-        vm.description = res.data.docs_group.description
+
+        vm.$set(vm, 'docs', res.data.docs);
+        vm.description = res.data.docs_group.description || "י שלמלא תוכן";
         vm.content = res.data.docs_group.content;
-        vm.docs = res.data.docs;
+
 
       }).catch(() => {
 
       })
-    }).catch(() => {
-      alert("לא מצליח לייצר קוד אוגדן ")
-    })
-
+    }
 
   },
   data() {

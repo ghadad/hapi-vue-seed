@@ -80,18 +80,16 @@ module.exports = [{
     path: '/api/docs/getbatch/{batch_id}',
     handler: function(request, reply) {
       let db = this.db;
+      let docs_group_exists = true ;
       db.get("select *  from docs_group where batch_id = ?", [request.params.batch_id], function(err, result) {
         if (err) {
           return reply("Failed to docs_group").code(401);
         }
 
-        if (!result) {
-          return reply({
-            batch_id: request.params.batch_id,
-            docs_group: result,
-            docs: []
-          });
+       if (!result) {
+          docs_group_exists = false ;
         }
+
         db.all("select * from docs where batch_id = ? ", [request.params.batch_id], (docserr, docs) => {
           if (docserr) {
             return reply("Failed to fetch grouped docs").code(401)
@@ -104,13 +102,16 @@ module.exports = [{
             retdocs.push({
               filename: d.filename,
               thumb: d.thumb,
-              id: d.id
+              id: d.id,
+              created_by:d.created_by 
             })
           })
+
 
           return reply({
             batch_id: request.params.batch_id,
             docs_group: result,
+            docs_group_exists :docs_group_exists,
             docs: retdocs
           })
         })
