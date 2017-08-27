@@ -39,7 +39,7 @@
 
           <h4> <span class="badge">{{page*pageSize+index+1}}</span><a :href="'/api/docs/getfile/'+r.id"> {{r.filename}} </a></h4>
           <div class="tags" v-if="r.keys">תגיות :
-            <router-link v-for="k in r.keys" :to="{ name: 'myfiles', query: {term:k,tag:true,init:true}}">
+            <router-link v-for="k in r.keys" :key="k" :to="{ name: 'myfiles', query: {term:k,tag:true,init:true}}">
               <span class="tag label label-default">{{k}}</span>
             </router-link>
           </div>

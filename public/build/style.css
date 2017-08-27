@@ -249,6 +249,11 @@ td.td_profile {
   width: 60px;
   max-width: 75px;
 }
+.td_index {
+  min-width: 50px;
+  width: 50px;
+  max-width: 65px;
+}
 .enlarge {
   cursor: zoom-in;
 }
@@ -466,5 +471,10 @@ td.td_file h4 {
 
 
 
+
+.code {
+  direction: ltr;
+  text-align: left
+}
 
 /*# sourceMappingURL=style.css.map*/

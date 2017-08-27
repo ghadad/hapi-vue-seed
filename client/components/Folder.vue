@@ -3,7 +3,7 @@
   <div class="well well-sm">{{folder.docs}}</div>
   <div v-if="folder.docs.length && account.facebook.id==folder.docs[0].created_by">
     <router-link :to="{path:'upload',query: { batch_id: folder.batch_id }}">עדכן אוגדן</router-link>
-  </div>
+   </div>
 
   <h1>פוסט קבצים מרוכז</h1>
   <div v-if="folder.docs_group && account.facebook.id==folder.docs_group.created_by">

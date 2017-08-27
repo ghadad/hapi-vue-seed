@@ -2,10 +2,10 @@
 <div id="upload">
   <div class="row-fluid">
     <div class="col-md-6">
-      <h2 v-show="1">  קוד אוגדן : {{batch_id}} <button class="btn btn-lg" @click="complete()">פרסם אוגדן</button>
+  <h2>  קוד אוגדן : {{batch_id}} <button v-show="canPublish" class="btn btn-lg" @click="complete()">פרסם אוגדן</button>
   <button @click="saveBacth()" v-if="description && !descriptionError" class="btn btn-lg btn-primary">שמור</button>
-  <button class="btn btn-lg btn-primary">אוגדן חדש</button>
-  <button class="btn btn-lg btn-danger" @click="deleteGroupLevel=1" v-show="deleteGroupLevel==0">מחק אוגדן</button>
+  <button class="btn btn-lg btn-primary" v-show="canNew" >אוגדן חדש</button>
+  <button class="btn btn-lg btn-danger" @click="deleteGroupLevel=1" v-show="canDelete && deleteGroupLevel==0">מחק אוגדן</button>
   <button class="btn btn-lg btn-danger" @click="deleteGroup(1)" v-show="deleteGroupLevel==1">לחצו שוב לאישור</button>
   </h2>
       <div class="form-group">
@@ -15,9 +15,9 @@
       </div>
       <div class="form-group">
         <h4>נא תייג את האוגדן עם המאפיינים הבאים</h4>
-        <div class="cats well well-sm">קטגוריה 1:<span @click="toggleTag('cat1',$event)" class="label" :class="getClass('cat1',t)" v-for="t in docsProps.cat1" :key="t">{{t}}</span></div>
-        <div class="cats well well-sm">קטגוריה 2 :<span @click="toggleTag('cat2',$event)" class="label" :class="getClass('cat2',t)" v-for="t in docsProps.cat2" :key="t">{{t}}</span></div>
-        <div class="cats well well-sm">קטגוריה 3:<span @click="toggleTag('cat3',$event)" class="label" :class="getClass('cat3',t)" v-for="t in docsProps.cat3" :key="t">{{t}}</span></div>
+        <div class="cats well well-sm">קטגוריה 1:<span @click="toggleTag('cat1',$event)" class="label" :class="getClass('cat1',t)" v-for="t in availableDocsProps.cat1" :key="t">{{t}}</span></div>
+        <div class="cats well well-sm">קטגוריה 2 :<span @click="toggleTag('cat2',$event)" class="label" :class="getClass('cat2',t)" v-for="t in availableDocsProps.cat2" :key="t">{{t}}</span></div>
+        <div class="cats well well-sm">קטגוריה 3:<span @click="toggleTag('cat3',$event)" class="label" :class="getClass('cat3',t)" v-for="t in availableDocsProps.cat3" :key="t">{{t}}</span></div>
       </div>
       <div class="alert alert-info">
         <h3>תאור נרחב <small>כאן תוכלו להוסיף תוכן חופשי , לינקים לסרטונים וכו' ...</small>
@@ -63,7 +63,7 @@
       </div>
     </div>
   </div>
-  <pre>{{docProps||json}}</pre>
+  <pre>{{docsProps||json}}</pre>
 </div>
 </template>
 <script>
@@ -130,8 +130,8 @@ export default {
   mounted() {
     let vm = this;
     vm.$http.get("/api/docs/props").then(res => {
-      console.log(res.data)
-      vm.$set(vm, 'docsProps', res.data);
+
+      vm.$set(vm, 'availableDocsProps', res.data);
     }).catch(err => {
       vm.err = err;
     });
@@ -143,6 +143,10 @@ export default {
           vm.description = res.data.docs_group.description
           vm.content = res.data.docs_group.content;
           vm.docs = res.data.docs;
+
+          vm.$set(vm,'docsProps',vm.setProps(JSON.parse((res.data.docs_group.props ||{}))));
+
+          vm.$forceUpdate();
 
         }).catch(() => {
 
@@ -158,8 +162,9 @@ export default {
         vm.$set(vm, 'docs', res.data.docs);
         vm.description = res.data.docs_group.description || "י שלמלא תוכן";
         vm.content = res.data.docs_group.content;
+        vm.$set(vm,'docsProps',vm.setProps(JSON.parse((res.data.docs_group.props ||{}))));
 
-
+        vm.$forceUpdate();
       }).catch(() => {
 
       })
@@ -169,7 +174,7 @@ export default {
   data() {
     let vm = this;
     return {
-      docProps: {
+      docsProps: {
         cat1: {},
         cat2: {},
         cat3: {}
@@ -177,6 +182,7 @@ export default {
       content: "",
       spin: false,
       docsProps: {},
+      availableDocsProps:{},
       deleteGroupLevel: 0,
       showEditor: 0,
       customToolbar: toolbarOptions,
@@ -242,35 +248,60 @@ export default {
       let real = event.currentTarget.innerText;
       let prop = real.replace(/\s/g, '');
       let ff = false;
-      if (!vm.docProps[g][prop]) {
-        vm.$set(vm.docProps[g], prop, {
+      if(!vm.docsProps[g])
+        vm.$set(vm,'docsProps',{
+          cat1: {},
+          cat2: {},
+          cat3: {}
+        })
+      if (!vm.docsProps[g][prop]) {
+        vm.$set(vm.docsProps[g], prop, {
           status: false,
           real: real
         });
         ff = true;
       }
-      vm.$set(vm.docProps[g], prop, {
+      vm.$set(vm.docsProps[g], prop, {
         status: ff,
         real: real
       });
-      console.log(vm.docProps.cat1)
+
     },
     getClass(g, p) {
       let vm = this;
-      p = p.replace(/\s/g, '')
-      if (vm.docProps[g][p] && vm.docProps[g][p].status) return "label-primary";
+      if(typeof vm.docsProps[g] == "undefined") return  "label-default"
+      if(!p)   return "label-default"
+      let k = p.replace(/\s/g, '')
+      if (vm.docsProps[g][k] != undefined  && vm.docsProps[g][k].status) return "label-primary";
       else
         return "label-default"
     },
+    setProps(props) {
+
+      let retVal = {
+        cat1: {},
+        cat2: {},
+        cat3: {}
+      };
+      Object.keys(props).forEach(c =>{
+          props[c].forEach( pp =>{
+             let k = pp.replace(/\s/g, '');
+                retVal[c][k] = { status:true,real:pp}
+            })
+        })
+
+      return retVal;
+    },
     extractProps() {
+      let vm = this ;
       let retVal = {
         cat1: [],
         cat2: [],
         cat3: []
       };
       ['cat1', 'cat2', 'cat3'].forEach(c => {
-        Object.keys(this.docProps[c]).forEach(p => {
-          retVal[c].push(this.docProps[c][p].real)
+        Object.keys(vm.docsProps[c]).forEach(p => {
+          retVal[c].push(vm.docsProps[c][p].real)
         })
       })
       return retVal;
@@ -300,14 +331,12 @@ export default {
       }).then(result => {
         vm.docs.splice(index, 1)
       }).catch(err => {
-        console.log("delete index error", err)
 
       })
     },
     saveBacth() {
       let vm = this;
       let props = vm.extractProps();
-      console.log("props:", props)
       vm.$http.post("api/docs/batch", {
         description: vm.description,
         content: vm.content,
@@ -333,6 +362,15 @@ export default {
     }
   },
   computed: {
+    canPublish:function() {
+      return false ;
+    },
+    canNew:function() {
+      return false ;
+    },
+    canDelete:function() {
+      return false ;
+    },
     descriptionError: function() {
       if (this.description.split(/\s+/).length < 5) {
         return "תאור קצר - מינימום 5 מילים";

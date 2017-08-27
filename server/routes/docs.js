@@ -80,14 +80,14 @@ module.exports = [{
     path: '/api/docs/getbatch/{batch_id}',
     handler: function(request, reply) {
       let db = this.db;
-      let docs_group_exists = true ;
+      let docs_group_exists = true;
       db.get("select *  from docs_group where batch_id = ?", [request.params.batch_id], function(err, result) {
         if (err) {
           return reply("Failed to docs_group").code(401);
         }
 
-       if (!result) {
-          docs_group_exists = false ;
+        if (!result) {
+          docs_group_exists = false;
         }
 
         db.all("select * from docs where batch_id = ? ", [request.params.batch_id], (docserr, docs) => {
@@ -103,7 +103,7 @@ module.exports = [{
               filename: d.filename,
               thumb: d.thumb,
               id: d.id,
-              created_by:d.created_by 
+              created_by: d.created_by
             })
           })
 
@@ -111,7 +111,7 @@ module.exports = [{
           return reply({
             batch_id: request.params.batch_id,
             docs_group: result,
-            docs_group_exists :docs_group_exists,
+            docs_group_exists: docs_group_exists,
             docs: retdocs
           })
         })
@@ -127,7 +127,9 @@ module.exports = [{
         if (err) {
           return reply("Failed to retreive batch id in complete upload").code(401);
         }
-        return reply({folders:result})
+        return reply({
+          folders: result
+        })
       })
     }
   },
@@ -141,12 +143,16 @@ module.exports = [{
           return reply("Failed to retreive batch id in complete upload").code(401);
         }
         if (result) {
-          db.run("update  batch  set seq = ?  where id =  ? ", [result.seq + 1,request.auth.credentials.profile.id], (err, res) => {
-                return reply({success:true});
+          db.run("update  batch  set seq = ?  where id =  ? ", [result.seq + 1, request.auth.credentials.profile.id], (err, res) => {
+            return reply({
+              success: true
+            });
           })
         } else {
           db.run("insert into batch values(?,?)", [request.auth.credentials.profile.id, 1], (err, res) => {
-            return reply({success:true});
+            return reply({
+              success: true
+            });
           })
         }
       })
@@ -199,7 +205,7 @@ module.exports = [{
         }
         if (result) {
           console.log(request.payload)
-          db.run("update docs_group set description =? , content =? ,created_by = ? where batch_id = ? ", [request.payload.description, request.payload.content, request.auth.credentials.profile.id, request.payload.batch_id], (err, res) => {
+          db.run("update docs_group set description =? , content =? ,created_by = ?,props = ?  where batch_id = ? ", [request.payload.description, request.payload.content, request.auth.credentials.profile.id, JSON.stringify(request.payload.props), request.payload.batch_id], (err, res) => {
             if (err) return reply({
               success: false,
               err: err
@@ -210,7 +216,7 @@ module.exports = [{
               })
           })
         } else {
-          db.run("insert into docs_group (description,content,created_by,batch_id) values(?,?,?,?)", [request.payload.description, request.payload.content, request.auth.credentials.profile.id, request.payload.batch_id], (err, res) => {
+          db.run("insert into docs_group (description,content,created_by,props,batch_id) values(?,?,?,?,?)", [request.payload.description, request.payload.content, request.auth.credentials.profile.id, JSON.stringify(request.payload.props), request.payload.batch_id], (err, res) => {
             if (err) return reply({
               success: false
             })

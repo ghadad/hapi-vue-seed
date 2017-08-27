@@ -38,7 +38,7 @@
             <h6> אוגדן :<router-link :to="{path:'folder',query:{batch_id:r.batch_id}}">אוגדן</router-link></h6>
             <h5> <a :href="'/api/docs/getfile/'+r.id"> {{r.filename}} </a></h5>
             <div class="tags" v-if="r.keys">תגיות :
-              <router-link v-for="k in r.keys" :to="{ name: 'Search', query: {term:k,tag:true,init:true}}">
+              <router-link v-for="k in r.keys"  :key="k" :to="{ name: 'Search', query: {term:k,tag:true,init:true}}">
                 <span class="tag label label-default">{{k}}</span>
               </router-link>
             </div>
