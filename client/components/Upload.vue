@@ -2,12 +2,14 @@
 <div id="upload">
   <div class="row-fluid">
     <div class="col-md-6">
-  <h2>  קוד אוגדן : {{batch_id}} <button v-show="canPublish" class="btn btn-lg" @click="complete()">פרסם אוגדן</button>
-  <button @click="saveBacth()" v-if="description && !descriptionError" class="btn btn-lg btn-primary">שמור</button>
-  <button class="btn btn-lg btn-primary" v-show="canNew" >אוגדן חדש</button>
+      <h2>  קוד אוגדן : {{batch_id}} </h2>
+      <h3><button v-show="canPublish && !active" class="btn btn-lg" @click="setStatus(1)">פרסם אוגדן</button>
+        <button v-show="active" class="btn btn-lg btn-danger" @click="setStatus(0)">בטל פרסום</button>
+  <button @click="saveBatch()" v-if="description && !descriptionError" class="btn btn-lg btn-primary">שמור</button>
+  <button class="btn btn-lg btn-primary" v-show="canNew" @click="getNew()">אוגדן חדש</button>
   <button class="btn btn-lg btn-danger" @click="deleteGroupLevel=1" v-show="canDelete && deleteGroupLevel==0">מחק אוגדן</button>
   <button class="btn btn-lg btn-danger" @click="deleteGroup(1)" v-show="deleteGroupLevel==1">לחצו שוב לאישור</button>
-  </h2>
+</h3>
       <div class="form-group">
         <label for="description">שלב א' - תאור קצר</label>
         <input type="text" v-model="description" class="form-control" id="description" placeholder="תאור קצר - לפחות  10 מילים">
@@ -135,41 +137,7 @@ export default {
     }).catch(err => {
       vm.err = err;
     });
-
-    if (!vm.$route.query.batch_id) {
-      vm.$http.get("/api/docs/getbatchid").then(res => {
-        vm.batch_id = res.data.batch_id
-        vm.$http.get("/api/docs/getbatch/" + vm.batch_id).then(res => {
-          vm.description = res.data.docs_group.description
-          vm.content = res.data.docs_group.content;
-          vm.docs = res.data.docs;
-
-          vm.$set(vm,'docsProps',vm.setProps(JSON.parse((res.data.docs_group.props ||{}))));
-
-          vm.$forceUpdate();
-
-        }).catch(() => {
-
-        })
-      }).catch(() => {
-        alert("לא מצליח לייצר קוד אוגדן ")
-      })
-    } else {
-      vm.batch_id = vm.$route.query.batch_id
-
-      vm.$http.get("/api/docs/getbatch/" + vm.batch_id).then(res => {
-
-        vm.$set(vm, 'docs', res.data.docs);
-        vm.description = res.data.docs_group.description || "י שלמלא תוכן";
-        vm.content = res.data.docs_group.content;
-        vm.$set(vm,'docsProps',vm.setProps(JSON.parse((res.data.docs_group.props ||{}))));
-
-        vm.$forceUpdate();
-      }).catch(() => {
-
-      })
-    }
-
+    vm.getData();
   },
   data() {
     let vm = this;
@@ -180,9 +148,10 @@ export default {
         cat3: {}
       },
       content: "",
+      active: false,
       spin: false,
       docsProps: {},
-      availableDocsProps:{},
+      availableDocsProps: {},
       deleteGroupLevel: 0,
       showEditor: 0,
       customToolbar: toolbarOptions,
@@ -243,13 +212,69 @@ export default {
     VueEditor
   },
   methods: {
+    getNew() {
+      let vm = this;
+      vm.$http.get("/api/docs/getnext").then(res => {
+        vm.content = ""
+        vm.description = ""
+
+        vm.$router.push({
+          path: 'upload',
+          query: {
+            batch_id: res.data.batch_id
+          }
+        })
+        vm.getData();
+      }).catch(err => {
+
+      })
+    },
+
+    getData() {
+      let vm = this;
+      if (!vm.$route.query.batch_id) {
+        vm.$http.get("/api/docs/getbatchid").then(res => {
+          vm.batch_id = res.data.batch_id
+          vm.$http.get("/api/docs/getbatch/" + vm.batch_id).then(res => {
+            vm.description = res.data.docs_group.description
+            vm.content = res.data.docs_group.content;
+            vm.active = res.data.docs_group.active;
+            vm.docs = res.data.docs;
+
+            vm.$set(vm, 'docsProps', vm.setProps(JSON.parse((res.data.docs_group.props || {}))));
+
+
+
+          }).catch(() => {
+
+          })
+        }).catch(() => {
+          alert("לא מצליח לייצר קוד אוגדן ")
+        })
+      } else {
+        vm.batch_id = vm.$route.query.batch_id
+
+        vm.$http.get("/api/docs/getbatch/" + vm.batch_id).then(res => {
+
+          vm.$set(vm, 'docs', res.data.docs);
+          vm.description = res.data.docs_group.description || "י שלמלא תוכן";
+          vm.content = res.data.docs_group.content;
+          vm.active = res.data.docs_group.active;
+          vm.$set(vm, 'docsProps', vm.setProps(JSON.parse((res.data.docs_group.props || {}))));
+
+          vm.$forceUpdate();
+        }).catch(() => {
+
+        })
+      }
+    },
     toggleTag(g, event) {
       let vm = this;
       let real = event.currentTarget.innerText;
       let prop = real.replace(/\s/g, '');
       let ff = false;
-      if(!vm.docsProps[g])
-        vm.$set(vm,'docsProps',{
+      if (!vm.docsProps[g])
+        vm.$set(vm, 'docsProps', {
           cat1: {},
           cat2: {},
           cat3: {}
@@ -269,10 +294,10 @@ export default {
     },
     getClass(g, p) {
       let vm = this;
-      if(typeof vm.docsProps[g] == "undefined") return  "label-default"
-      if(!p)   return "label-default"
+      if (typeof vm.docsProps[g] == "undefined") return "label-default"
+      if (!p) return "label-default"
       let k = p.replace(/\s/g, '')
-      if (vm.docsProps[g][k] != undefined  && vm.docsProps[g][k].status) return "label-primary";
+      if (vm.docsProps[g][k] != undefined && vm.docsProps[g][k].status) return "label-primary";
       else
         return "label-default"
     },
@@ -283,17 +308,20 @@ export default {
         cat2: {},
         cat3: {}
       };
-      Object.keys(props).forEach(c =>{
-          props[c].forEach( pp =>{
-             let k = pp.replace(/\s/g, '');
-                retVal[c][k] = { status:true,real:pp}
-            })
+      Object.keys(props).forEach(c => {
+        props[c].forEach(pp => {
+          let k = pp.replace(/\s/g, '');
+          retVal[c][k] = {
+            status: true,
+            real: pp
+          }
         })
+      })
 
       return retVal;
     },
     extractProps() {
-      let vm = this ;
+      let vm = this;
       let retVal = {
         cat1: [],
         cat2: [],
@@ -334,7 +362,8 @@ export default {
 
       })
     },
-    saveBacth() {
+    saveBatch(redirect) {
+
       let vm = this;
       let props = vm.extractProps();
       vm.$http.post("api/docs/batch", {
@@ -342,19 +371,29 @@ export default {
         content: vm.content,
         batch_id: vm.batch_id,
         props: props
-      }).then(res => {}).catch(err => {
+      }).then(res => {
+        if (redirect == true)
+          vm.$router.push({
+            path: 'folder',
+            query: {
+              batch_id: vm.batch_id
+            }
+          })
+      }).catch(err => {
 
       });
     },
-    complete() {
+    setStatus(status) {
       let vm = this;
 
-      vm.$http.get("api/docs/complete", {
-        params: {
-          batch_id: vm.batch_id
+      vm.$http.get("api/docs/set_status/" + vm.batch_id + "/" + status).then(res => {
+        console.log(res)
+        vm.saveBatch(status == 1 ? true : false);
+        if (status == 0) {
+          vm.getData();
         }
-      }).then(res => {}).catch(err => {
-
+      }).catch(err => {
+        console.error(res)
       })
     },
     'showSError': function(err) {
@@ -362,14 +401,16 @@ export default {
     }
   },
   computed: {
-    canPublish:function() {
-      return false ;
+    canPublish: function() {
+      return true;
     },
-    canNew:function() {
-      return false ;
+    canNew: function() {
+      let vm = this;
+
+      return true;
     },
-    canDelete:function() {
-      return false ;
+    canDelete: function() {
+      return false;
     },
     descriptionError: function() {
       if (this.description.split(/\s+/).length < 5) {

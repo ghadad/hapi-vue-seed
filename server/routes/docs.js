@@ -2,6 +2,8 @@
 
 const path = require("path");
 
+const Boom = require("boom");
+
 var Controller = require('../controllers/docsController');
 
 module.exports = [{
@@ -135,7 +137,22 @@ module.exports = [{
   },
   {
     method: 'get',
-    path: '/api/docs/complete',
+    path: '/api/docs/set_status/{batch_id}/{status}',
+    handler: function(request, reply) {
+      let db = this.db;
+
+      db.run("update  docs_group  set active = ?   where batch_id =  ? ", [ request.params.status,request.params.batch_id], (err, res) => {
+        if (err) return reply(Boom.badRequest(err));
+        return reply({
+          success: true
+        });
+      })
+
+    }
+  },
+  {
+    method: 'get',
+    path: '/api/docs/getnext',
     handler: function(request, reply) {
       let db = this.db;
       db.get("select seq from batch where id = ?", [request.auth.credentials.profile.id], function(err, result) {
@@ -143,14 +160,19 @@ module.exports = [{
           return reply("Failed to retreive batch id in complete upload").code(401);
         }
         if (result) {
-          db.run("update  batch  set seq = ?  where id =  ? ", [result.seq + 1, request.auth.credentials.profile.id], (err, res) => {
+          let seq = result.seq + 1 ;
+          db.run("update  batch  set seq = ?  where id =  ? ", [seq, request.auth.credentials.profile.id], (err, res) => {
+            let batch_id = request.auth.credentials.profile.id+":"+seq;
             return reply({
+              batch_id :batch_id,
               success: true
             });
           })
         } else {
           db.run("insert into batch values(?,?)", [request.auth.credentials.profile.id, 1], (err, res) => {
+            let batch_id = request.auth.credentials.profile.id+":1";
             return reply({
+              batch_id :batch_id,
               success: true
             });
           })
@@ -230,8 +252,8 @@ module.exports = [{
     }
   }, {
     method: 'GET',
-    path: '/api/docs/search',
-    config: Controller.search
+    path: '/api/docs/search2',
+    config: Controller.search2
   }, {
     method: 'GET',
     path: '/api/docs/props',

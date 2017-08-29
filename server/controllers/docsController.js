@@ -113,6 +113,8 @@
 
 
      this.db.get("select * from docs where id = ?", [request.params.id], function(err, res) {
+          if (err) return reply(Boom.badRequest(err));
+          if(!res) return reply(Boom.badRequest("File not found on server"));
        let file = res.path + '/' + res.filename;
 
        if (request.query.thumb) {
@@ -137,7 +139,7 @@
      prm.push(JSON.stringify(request.payload.cat1));
      prm.push(JSON.stringify(request.payload.cat2));
      prm.push(JSON.stringify(request.payload.cat3));
-     console.log("PRM : " ,prm)
+     console.log("PRM : ", prm)
      this.db.run("update props set cat1 = ? ,cat2 = ? ,cat3 = ?", prm, function(err) {
        if (err) return reply(Boom.badRequest(err));
        return reply({
@@ -171,6 +173,7 @@
      })
    }
  };
+
  exports.search = {
    description: 'searching docs!',
    notes: 'searching docs',
@@ -180,7 +183,9 @@
      //this.db.all("Select * from docs where id=?",["71c1dbe97d4fc8151f02b954d8026b0d"],function(err,docs){
      const db = this.db;
      let prm = {};
-     let sql = "Select docs.*,users.name  from docs left  join users on docs.created_by = users.id where 1=1 ";
+     let sql = "Select docs.*,users.name  from docs " +
+       " left  join users on docs.created_by = users.id  " +
+       " where 1=1 ";
      let more_sql = "";
      console.log(request.query);
      if (request.query.term) {
@@ -188,7 +193,7 @@
        if (request.query.tag == "true" || request.query.tag == true)
          more_sql += " and (keys like $term)";
        else
-         more_sql += " and (keys like $term or filename like $term or batch_id like $term )";
+         more_sql += " and (keys like $term or filename like $term or docs.batch_id like $term )";
        prm.$term = '%' + term + '%'
      }
 
@@ -243,7 +248,7 @@
                    facebook_pic_url: "http://graph.facebook.com/v2.9/" + d.created_by + "/picture",
                    keys: JSON.parse(d.keys),
                    pathurl: path.resolve(request.server.app.config.uploadPublicDirectory, d.batch_id, d.filename),
-                   enlarge: (d.filename.match(/(jpeg|jpg|png|bmp)$/i) ? true :false ),
+                   enlarge: (d.filename.match(/(jpeg|jpg|png|bmp)$/i) ? true : false),
                    thumb: (d.filename.match(/(jpeg|jpg|png|bmp)$/i) ?
                      path.resolve(request.server.app.config.uploadPublicDirectory, d.batch_id, "thumbs", d.filename) : defaultThumb),
 
@@ -270,3 +275,106 @@
        })
    }
  };
+
+
+  exports.search2 = {
+    description: 'searching folders!',
+    notes: 'searching folders',
+    tags: ['folders', 'search'],
+    handler: function(request, reply) {
+      //this.db.all("Select * from docs where path like '%פעילות%' or filename like '%פעילות%'",function(err,docs){
+      //this.db.all("Select * from docs where id=?",["71c1dbe97d4fc8151f02b954d8026b0d"],function(err,docs){
+      const db = this.db;
+      let prm = {};
+      let sql = "Select docs_group.*,users.name  from docs_group " +
+        " left  join users on docs_group.created_by = users.id  " +
+        " where 1=1 ";
+      let more_sql = "";
+
+      if (request.query.term) {
+        let term = request.query.term.replace(/[\+\s]/g, "%").replace(/\%+/g, "%");
+        if (request.query.tag == "true" || request.query.tag == true)
+          more_sql += " and (keys props $term)";
+        else
+          more_sql += " and (props like $term or description like $term or content like $term )";
+        prm.$term = '%' + term + '%'
+      }
+
+      if (request.query.myfiles) {
+        more_sql += " and created_by = $id ";
+        prm.$id = request.auth.credentials.profile.id
+      }
+
+      // PAGES
+      let pageSize = request.query.pageSize || 100;
+
+      let currentPage = request.query.page || 1;
+      if (currentPage < 0) currentPage = 1;
+
+      more_sql += " limit " + pageSize
+      let offset = (currentPage - 1) * pageSize;
+      let offset_sql = " offset " + offset
+
+      console.log("more_sql", more_sql)
+      Async.series([
+          function(cb) {
+
+            db.get("select count(*) as cnt from docs_group where 1=1 " + more_sql + offset_sql, prm, function(err, result) {
+              if (err) cb(err, null);
+              else {
+                if (result)
+                  cb(null, result.cnt)
+                else
+                  cb(null, 0)
+              }
+            })
+          },
+          function(cb) {
+            db.all(sql + more_sql + offset_sql, prm, function(err, docs) {
+              if (err) {
+                cb(err, null)
+              } else {
+                let result = []
+                docs.forEach(d => {
+
+                  //let defaultThumb = "/imgs" + path.sep + "iconthumb" + path.extname(d.filename) + ".png" // returns '.html'
+
+
+                  result.push({
+                  //  creation_date: d.creation_date,
+                  //  id: d.id,
+                  //  md5: d.md5,
+                    description: d.description,
+                    batch_id: d.batch_id,
+                    created_by: d.created_by,
+                    facebook_name: d.name,
+                    facebook_pic_url: "http://graph.facebook.com/v2.9/" + d.created_by + "/picture",
+                    props: JSON.parse(d.props),
+                    //pathurl: path.resolve(request.server.app.config.uploadPublicDirectory, d.batch_id, d.filename),
+                    //enlarge: (d.filename.match(/(jpeg|jpg|png|bmp)$/i) ? true : false),
+                    //thumb: (d.filename.match(/(jpeg|jpg|png|bmp)$/i) ?
+                    //  path.resolve(request.server.app.config.uploadPublicDirectory, d.batch_id, "thumbs", d.filename) : defaultThumb),
+
+
+
+                  })
+
+                })
+                cb(null, result)
+              }
+            })
+          }
+        ],
+        function(err, result) {
+          if (err) reply(Boom.badRequest(err))
+          else
+            reply({
+              currentPage: currentPage,
+              pageSize: pageSize,
+              totalPages: Math.ceil(result[0] / pageSize),
+              count: result[0],
+              rows: result[1]
+            });
+        })
+    }
+  };

@@ -19,9 +19,9 @@
       </thead>
       <tbody>
         <tr v-for="(r,index) in result.rows">
-          <td class="td_index"><span class="badge">{{page*pageSize+index+1}}</span></td>
+          <!--td class="td_index"><span class="badge">{{page*pageSize+index+1}}</span></td>
           <td class="td_thumb"><a type="button" data-toggle="modal" @click="setPicModal(r)" data-target="#myModal">
-           <img :class="{'enlarge':r.enlarge}" v-if="r.thumb" :src="r.thumb" /></a></td>
+           <img :class="{'enlarge':r.enlarge}" v-if="r.thumb" :src="r.thumb" /></a></td-->
           <td class="td_profile text-center">
             <div class="text-center">
               <a target="_BLANK" :href="'https://facebook.com/' + r.created_by">
@@ -31,16 +31,19 @@
               </a>
             </div>
           </td>
-          <td class="td_download text-center">
+          <!--td class="td_download text-center">
             <a :href="'/api/docs/getfile/'+r.id">  <i class="download_thumb glyphicon glyphicon-download"></i>
-          <br />הורדה </a></td>
+          <br />הורדה </a></td-->
           <td class="td_file">
-            <h6> אוגדן :<router-link :to="{path:'folder',query:{batch_id:r.batch_id}}">אוגדן</router-link></h6>
-            <h5> <a :href="'/api/docs/getfile/'+r.id"> {{r.filename}} </a></h5>
-            <div class="tags" v-if="r.keys">תגיות :
-              <router-link v-for="k in r.keys"  :key="k" :to="{ name: 'Search', query: {term:k,tag:true,init:true}}">
-                <span class="tag label label-default">{{k}}</span>
+            <h3> <router-link :to="{path:'folder',query:{batch_id:r.batch_id}}">{{r.description}}</router-link></h3>
+            <!--h5> <a :href="'/api/docs/getfile/'+r.id"> {{r.filename}} </a></h5-->
+            <div class="tags" v-if="r.props">תגיות :
+              <span v-for="k in Object.keys(r.props)">
+            
+              <router-link v-for="p in r.props[k]" :to="{ name: 'Search', query: {term:p,tag:true,init:true}}">
+                <span class="tag label label-default">{{p}}</span>
               </router-link>
+              </span>
             </div>
           </td>
 
@@ -149,7 +152,7 @@ export default {
       }
       vm.doSearch = 1;
       vm.result = [];
-      vm.$http.get("/api/docs/search", {
+      vm.$http.get("/api/docs/search2", {
         params: {
           term: vm.term,
           tag: vm.tag,
