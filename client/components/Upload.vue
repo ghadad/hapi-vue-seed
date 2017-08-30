@@ -2,11 +2,12 @@
 <div id="upload">
   <div class="row-fluid">
     <div class="col-md-6">
-      <h2>  קוד אוגדן : {{batch_id}} </h2>
+      <h3>  קוד אוגדן : {{batch_id}} </h3>
       <h3><button v-show="canPublish && !active" class="btn btn-lg" @click="setStatus(1)">פרסם אוגדן</button>
         <button v-show="active" class="btn btn-lg btn-danger" @click="setStatus(0)">בטל פרסום</button>
   <button @click="saveBatch()" v-if="description && !descriptionError" class="btn btn-lg btn-primary">שמור</button>
-  <button class="btn btn-lg btn-primary" v-show="canNew" @click="getNew()">אוגדן חדש</button>
+  <button class="btn btn-lg btn-primary" v-show="canNew!=1" @click="canNew=1">אוגדן חדש</button>
+  <button class="btn btn-lg btn-primary" v-show="canNew==1" @click="getNew()">נא אשרו</button>
   <button class="btn btn-lg btn-danger" @click="deleteGroupLevel=1" v-show="canDelete && deleteGroupLevel==0">מחק אוגדן</button>
   <button class="btn btn-lg btn-danger" @click="deleteGroup(1)" v-show="deleteGroupLevel==1">לחצו שוב לאישור</button>
 </h3>
@@ -65,7 +66,7 @@
       </div>
     </div>
   </div>
-  <pre>{{docsProps||json}}</pre>
+  <!--pre>{{docsProps||json}}</pre-->
 </div>
 </template>
 <script>
@@ -142,6 +143,8 @@ export default {
   data() {
     let vm = this;
     return {
+    canNew:0,
+    posted : 0 ,
       docsProps: {
         cat1: {},
         cat2: {},
@@ -215,6 +218,7 @@ export default {
     getNew() {
       let vm = this;
       vm.$http.get("/api/docs/getnext").then(res => {
+        vm.canNew = 0;
         vm.content = ""
         vm.description = ""
 
@@ -372,6 +376,8 @@ export default {
         batch_id: vm.batch_id,
         props: props
       }).then(res => {
+        vm.canNew = 0 ;
+        vm.posted = 1;
         if (redirect == true)
           vm.$router.push({
             path: 'folder',
@@ -385,7 +391,6 @@ export default {
     },
     setStatus(status) {
       let vm = this;
-
       vm.$http.get("api/docs/set_status/" + vm.batch_id + "/" + status).then(res => {
         console.log(res)
         vm.saveBatch(status == 1 ? true : false);
@@ -393,7 +398,7 @@ export default {
           vm.getData();
         }
       }).catch(err => {
-        console.error(res)
+        console.error(err)
       })
     },
     'showSError': function(err) {
@@ -402,11 +407,8 @@ export default {
   },
   computed: {
     canPublish: function() {
-      return true;
-    },
-    canNew: function() {
-      let vm = this;
-
+    let vm = this ;
+      if(vm.descriptionError) return false ;
       return true;
     },
     canDelete: function() {

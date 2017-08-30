@@ -91,7 +91,7 @@ module.exports = [{
         if (!result) {
           docs_group_exists = false;
         }
-
+        result.props = JSON.parse((result.props || "{}"));
         db.all("select * from docs where batch_id = ? ", [request.params.batch_id], (docserr, docs) => {
           if (docserr) {
             return reply("Failed to fetch grouped docs").code(401)
@@ -119,8 +119,7 @@ module.exports = [{
         })
       });
     }
-  },
-  {
+  }, {
     method: 'get',
     path: '/api/docs/myfolders',
     handler: function(request, reply) {
@@ -134,14 +133,13 @@ module.exports = [{
         })
       })
     }
-  },
-  {
+  }, {
     method: 'get',
     path: '/api/docs/set_status/{batch_id}/{status}',
     handler: function(request, reply) {
       let db = this.db;
 
-      db.run("update  docs_group  set active = ?   where batch_id =  ? ", [ request.params.status,request.params.batch_id], (err, res) => {
+      db.run("update  docs_group  set active = ?   where batch_id =  ? ", [request.params.status, request.params.batch_id], (err, res) => {
         if (err) return reply(Boom.badRequest(err));
         return reply({
           success: true
@@ -149,8 +147,7 @@ module.exports = [{
       })
 
     }
-  },
-  {
+  }, {
     method: 'get',
     path: '/api/docs/getnext',
     handler: function(request, reply) {
@@ -160,27 +157,26 @@ module.exports = [{
           return reply("Failed to retreive batch id in complete upload").code(401);
         }
         if (result) {
-          let seq = result.seq + 1 ;
+          let seq = result.seq + 1;
           db.run("update  batch  set seq = ?  where id =  ? ", [seq, request.auth.credentials.profile.id], (err, res) => {
-            let batch_id = request.auth.credentials.profile.id+":"+seq;
+            let batch_id = request.auth.credentials.profile.id + ":" + seq;
             return reply({
-              batch_id :batch_id,
+              batch_id: batch_id,
               success: true
             });
           })
         } else {
           db.run("insert into batch values(?,?)", [request.auth.credentials.profile.id, 1], (err, res) => {
-            let batch_id = request.auth.credentials.profile.id+":1";
+            let batch_id = request.auth.credentials.profile.id + ":1";
             return reply({
-              batch_id :batch_id,
+              batch_id: batch_id,
               success: true
             });
           })
         }
       })
     }
-  },
-  {
+  }, {
     method: 'delete',
     path: '/api/docsgroup',
     handler: function(request, reply) {
@@ -199,8 +195,7 @@ module.exports = [{
         })
       })
     }
-  },
-  {
+  }, {
     method: 'get',
     path: '/api/docs/delete',
     handler: function(request, reply) {

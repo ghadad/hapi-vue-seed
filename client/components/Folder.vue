@@ -1,19 +1,27 @@
 <template>
 <div id="folder_docs">
-  <div class="well well-sm">{{folder.docs}}</div>
-  <div v-if="folder.docs.length && account.facebook.id==folder.docs[0].created_by">
+  <div v-if="account.facebook.id==folder.docs_group.created_by">
     <router-link :to="{path:'upload',query: { batch_id: folder.batch_id }}">עדכן אוגדן</router-link>
    </div>
 
-  <h1>פוסט קבצים מרוכז</h1>
-  <div v-if="folder.docs_group && account.facebook.id==folder.docs_group.created_by">
-    <router-link :to="{path:'upload',query: { batch_id: folder.batch_id }}">עדכן אוגדן</router-link>
-  </div>
-
+  <h2>אוגדן : {{folder.docs_group.description}}</h2>
   <div v-if="folder.docs_group_exists">
+  <div class="row">
+    <div class="col-md-8">
+    <div class="content" v-html="folder.docs_group.content"></div>
+    </div>
+    <div class="col-md-4">
+    <div class="tags" v-if="folder.docs_group.props">תגיות :
+      <span v-for="k in Object.keys(folder.docs_group.props)">
 
-    <h2>{{folder.docs_group.description}}</h2>
-    <div class="well well-sm content" v-html="folder.docs_group.content"></div>
+      <router-link v-for="p in folder.docs_group.props[k]" :to="{ name: 'Search', query: {term:p,tag:true,init:true}}">
+        <span class="tag label label-default">{{p}}</span>
+      </router-link>
+      </span>
+    </div>
+
+    </div>
+    </div>
     <div v-if="folder.docs.length">
       {{folder.docs}}
     </div>
