@@ -1,5 +1,5 @@
 <template>
-<div style="margin-top: 90px;" class="container-fluid" @mousemove="idleReset">
+<div style="margin-top: 90px;" class="container" @mousemove="idleReset">
 
   <sidebar :account="account"></sidebar>
 
@@ -73,6 +73,7 @@ export default {
       });
     }).catch(err => {
 
+      this.$router.push("/")
     });
 
     this.setIdleTimer = setInterval(() => {

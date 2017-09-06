@@ -2,6 +2,9 @@ import Vue from 'vue';
 
 Vue.prototype.$bus = new Vue({});
 
+import Tinymce from 'tinymce'
+
+
 import LocalStorage from "store";
 Vue.prototype.$localdb = LocalStorage
 

@@ -22,7 +22,10 @@
         <div class="cats well well-sm">קטגוריה 2 :<span @click="toggleTag('cat2',$event)" class="label" :class="getClass('cat2',t)" v-for="t in availableDocsProps.cat2" :key="t">{{t}}</span></div>
         <div class="cats well well-sm">קטגוריה 3:<span @click="toggleTag('cat3',$event)" class="label" :class="getClass('cat3',t)" v-for="t in availableDocsProps.cat3" :key="t">{{t}}</span></div>
       </div>
-      <div class="alert alert-info">
+
+      <div class="">
+
+
         <h3>תאור נרחב <small>כאן תוכלו להוסיף תוכן חופשי , לינקים לסרטונים וכו' ...</small>
         <button v-show="!showEditor"  class="btn btn-sm" @click="showEditor=1">
         <i class="glyphicon glyphicon-pencil"></i>
@@ -32,7 +35,7 @@
     </button>
    </h3>
         <div style="height:300px;overflow:auto;background:white " v-show="!showEditor" v-html="content"></div>
-        <vue-editor style="background:white" v-if="showEditor" :editorToolbar="customToolbar" v-model="content"></vue-editor>
+
       </div>
     </div>
     <div class="col-md-6">
@@ -66,6 +69,7 @@
       </div>
     </div>
   </div>
+
   <!--pre>{{docsProps||json}}</pre-->
 </div>
 </template>
@@ -143,8 +147,8 @@ export default {
   data() {
     let vm = this;
     return {
-    canNew:0,
-    posted : 0 ,
+      canNew: 0,
+      posted: 0,
       docsProps: {
         cat1: {},
         cat2: {},
@@ -245,7 +249,7 @@ export default {
             vm.active = res.data.docs_group.active;
             vm.docs = res.data.docs;
 
-            vm.$set(vm, 'docsProps', vm.setProps(JSON.parse((res.data.docs_group.props || {}))));
+            vm.$set(vm, 'docsProps', vm.setProps(res.data.docs_group.props || {}));
 
 
 
@@ -264,7 +268,7 @@ export default {
           vm.description = res.data.docs_group.description || "י שלמלא תוכן";
           vm.content = res.data.docs_group.content;
           vm.active = res.data.docs_group.active;
-          vm.$set(vm, 'docsProps', vm.setProps(JSON.parse((res.data.docs_group.props || {}))));
+          vm.$set(vm, 'docsProps', vm.setProps((res.data.docs_group.props || {})));
 
           vm.$forceUpdate();
         }).catch(() => {
@@ -376,7 +380,7 @@ export default {
         batch_id: vm.batch_id,
         props: props
       }).then(res => {
-        vm.canNew = 0 ;
+        vm.canNew = 0;
         vm.posted = 1;
         if (redirect == true)
           vm.$router.push({
@@ -407,8 +411,8 @@ export default {
   },
   computed: {
     canPublish: function() {
-    let vm = this ;
-      if(vm.descriptionError) return false ;
+      let vm = this;
+      if (vm.descriptionError) return false;
       return true;
     },
     canDelete: function() {

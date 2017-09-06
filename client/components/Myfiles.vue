@@ -1,68 +1,74 @@
 <template>
-<div id="search" class="fixed-content container-fluid">
-  <div class="">
-    <form @submit.prevent class="form form-inline">
-      <div class="form-group">
+<div id="myfiles" class="row">
+  <div class="col-md-12">
+    <router-link :to="{path:'/myfiles'}">
+      <h1>הקבצים שלי </h1></router-link>
+    <div class="text-center ">
 
-        <button class="btn btn-info btn-lg" @click="getMyFolders()">האוגדנים שלי</button>
-      </div>
-      <div class="form-group">
-        <input type="search" class="form-control input-lg" v-model="term" placeholder="">
-        <button class="btn btn-primary btn-lg" @click="search()">חיפוש</button>
-      </div>
-    </form>
-  </div>
+      <form @submit.prevent class="form form-inline ">
+        <div class="form-group ">
 
-  <pagination :page="page" :totalPages="totalPages" :totalRows="totalRows" :displayPages="20" @setPage="(val) => { this.setPage(val)}"></pagination>
-
-  <table class="table table-striped">
-    <thead>
-      <td></td>
-    </thead>
-    <tbody>
-      <tr v-for="(r,index) in result.rows">
-        <td class="td_thumb"><a type="button" data-toggle="modal" @click="setPicModal(r)" data-target="#myModal">
-           <img :class="{'enlarge':r.enlarge}" v-if="r.thumb" :src="r.thumb" /></a></td>
-        <td class="td_profile text-center">
-          <div class="text-center">
-            <a target="_BLANK" :href="'https://facebook.com/' + r.created_by">
-              <div> </div>
-              <div><img class="img-circle" :src="getUserPic(r.created_by)"></div>
-              <div>{{r.facebook_name}}</div>
-            </a>
-          </div>
-        </td>
-        <td class="td_download text-center">
-          <a :href="'/api/docs/getfile/'+r.id">  <i class="download_thumb glyphicon glyphicon-download"></i>
-          <br />הורדה </a></td>
-        <td class="td_file">
-
-          <h4> <span class="badge">{{page*pageSize+index+1}}</span><a :href="'/api/docs/getfile/'+r.id"> {{r.filename}} </a></h4>
-          <div class="tags" v-if="r.keys">תגיות :
-            <router-link v-for="k in r.keys" :key="k" :to="{ name: 'myfiles', query: {term:k,tag:true,init:true}}">
-              <span class="tag label label-default">{{k}}</span>
-            </router-link>
-          </div>
-        </td>
-
-      </tr>
-    </tbody>
-  </table>
-  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel">{{modal.title}}</h4>
+          <input type="search " class="form-control " v-model="term " placeholder=" ">
+          <button class="btn btn-primary " @click="search( 'init') ">חיפוש</button>
         </div>
-        <div class="modal-body">
-          <img :src="modal.picUrl">
+      </form>
+    </div>
+
+    <pagination :page="page " :totalPages="totalPages " :totalRows="totalRows " :displayPages="20 " @setPage="(val)=> { this.setPage(val)}"></pagination>
+
+    <table class="table table-striped">
+      <thead>
+        <td></td>
+      </thead>
+      <tbody>
+        <tr v-for="(r,index) in result.rows">
+          <!--td class="td_index"><span class="badge">{{page*pageSize+index+1}}</span></td>
+          <td class="td_thumb"><a type="button" data-toggle="modal" @click="setPicModal(r)" data-target="#myModal">
+           <img :class="{'enlarge':r.enlarge}" v-if="r.thumb" :src="r.thumb" /></a></td-->
+          <td class="td_profile text-center">
+            <div class="text-center">
+              <a target="_BLANK" :href="'https://facebook.com/' + r.created_by">
+                <div> </div>
+                <div><img class="img-circle" :src="getUserPic(r.created_by)"></div>
+                <div>{{r.facebook_name}}</div>
+              </a>
+            </div>
+          </td>
+          <!--td class="td_download text-center">
+            <a :href="'/api/docs/getfile/'+r.id">  <i class="download_thumb glyphicon glyphicon-download"></i>
+          <br />הורדה </a></td-->
+          <td class="td_file">
+            <h4> <router-link :to="{path:'folder',query:{batch_id:r.batch_id}}">{{r.description}}</router-link></h4>
+            <!--h5> <a :href="'/api/docs/getfile/'+r.id"> {{r.filename}} </a></h5-->
+            <div class="" v-if="r.props">תגיות :
+              <span v-for="k in Object.keys(r.props)">
+
+              <router-link v-for="p in r.props[k]" :to="{ name: 'myfiles', query: {term:p,tag:true,init:true}}">
+                <span class="tag label label-default">{{p}}</span>
+              </router-link>
+              </span>
+            </div>
+          </td>
+
+        </tr>
+      </tbody>
+    </table>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">{{modal.title}}</h4>
+          </div>
+          <div class="modal-body">
+            <img :src="modal.picUrl">
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <pagination :page="page" :totalPages="totalPages" :totalRows="totalRows" :displayPages="20" @setPage="(val) => { this.setPage(val)}"></pagination>
+    <pagination :page="page" :totalPages="totalPages" :totalRows="totalRows" :displayPages="20" @setPage="(val) => { this.setPage(val)}"></pagination>
 
+  </div>
 </div>
 </template>
 <script>
@@ -89,15 +95,19 @@ export default {
     }
   },
   mounted() {
-    this.term = this.$route.query.term
-    if (this.$route.query.tag) this.tag = true;
-    else this.tag = false;
-
-    this.search('init');
+    this.search();
+    if (this.$route.query.term) {
+      this.term = this.$route.query.term
+      if (this.$route.query.tag) this.tag = true;
+      else this.tag = false;
+      //  this.search();
+    } else {
+      //  this.search();
+    }
   },
   watch: {
     '$route.query.init': function(oldv, newv) {
-      this.search('init');
+      //  this.search('init');
     },
     '$route.query.term': function(oldv, newv) {
 
@@ -116,7 +126,7 @@ export default {
       this.modal.title = r.filename;
     },
     getUserLink(id) {
-      if (id == 1) id = 397081443825167;
+      //if (id == 1) id = 397081443825167;
 
       //  let fbProfileLink = 'https://facebook.com/' + r.created_by;
 
@@ -134,17 +144,8 @@ export default {
       this.page = p;
       this.search();
     },
-    getMyFolders() {
-      let vm = this;
-      vm.$http.get("/api/docs/myfolders").then(res => {
-        vm.folders = res.data;
-      }).catch(err => {
-        vm.err = err;
-      })
-    },
     search(initQ) {
       let vm = this;
-      //  if (!vm.term) return false;
       if (initQ == 'init') {
         vm.page = 0;
         vm.$router.push({
@@ -156,7 +157,7 @@ export default {
       }
       vm.doSearch = 1;
       vm.result = [];
-      vm.$http.get("/api/docs/search", {
+      vm.$http.get("/api/docs/search2", {
         params: {
           myfiles: true,
           term: vm.term,
@@ -224,10 +225,7 @@ td.td_profile {
   position: relative;
 }
 
-.tags {
-  position: absolute;
-  bottom: 7px;
-}
+.tags {}
 
 .tag {
   font-size: 13px;
@@ -239,6 +237,12 @@ td.td_profile {
   min-width: 60px;
   width: 60px;
   max-width: 75px;
+}
+
+.td_index {
+  min-width: 50px;
+  width: 50px;
+  max-width: 65px;
 }
 
 .enlarge {

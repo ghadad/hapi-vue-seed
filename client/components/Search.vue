@@ -5,7 +5,7 @@
       <form @submit.prevent class="form form-inline">
         <div class="form-group">
 
-          <input type="search" class="form-control input-lg" v-model="term" placeholder="">
+          <input type="search" class="form-control" v-model="term" placeholder="">
           <button class="btn btn-primary" @click="search('init')">חיפוש</button>
         </div>
       </form>
@@ -35,11 +35,11 @@
             <a :href="'/api/docs/getfile/'+r.id">  <i class="download_thumb glyphicon glyphicon-download"></i>
           <br />הורדה </a></td-->
           <td class="td_file">
-            <h3> <router-link :to="{path:'folder',query:{batch_id:r.batch_id}}">{{r.description}}</router-link></h3>
+            <h4> <router-link :to="{path:'folder',query:{batch_id:r.batch_id}}">{{r.description}}</router-link></h4>
             <!--h5> <a :href="'/api/docs/getfile/'+r.id"> {{r.filename}} </a></h5-->
-            <div class="tags" v-if="r.props">תגיות :
+            <div class="" v-if="r.props">תגיות :
               <span v-for="k in Object.keys(r.props)">
-            
+
               <router-link v-for="p in r.props[k]" :to="{ name: 'Search', query: {term:p,tag:true,init:true}}">
                 <span class="tag label label-default">{{p}}</span>
               </router-link>
@@ -92,16 +92,16 @@ export default {
     }
   },
   mounted() {
-    if (this.$route.query.term) {
-      this.term = this.$route.query.term
-      if (this.$route.query.tag) this.tag = true;
-      else this.tag = false;
-      this.search();
-    }
+    //if (this.$route.query.term) {
+    //  this.term = this.$route.query.term
+    //  if (this.$route.query.tag) this.tag = true;
+    //  else this.tag = false;
+    //  this.search();
+    //  }
   },
   watch: {
     '$route.query.init': function(oldv, newv) {
-      this.search('init');
+      //  this.search('init');
     },
     '$route.query.term': function(oldv, newv) {
 
@@ -219,10 +219,7 @@ td.td_profile {
   position: relative;
 }
 
-.tags {
-  position: absolute;
-  bottom: 7px;
-}
+.tags {}
 
 .tag {
   font-size: 13px;

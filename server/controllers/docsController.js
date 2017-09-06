@@ -294,10 +294,10 @@
       if (request.query.term) {
         let term = request.query.term.replace(/[\+\s]/g, "%").replace(/\%+/g, "%");
         if (request.query.tag == "true" || request.query.tag == true)
-          more_sql += " and (keys props $term)";
+          more_sql += " and (props like $term) ";
         else
           more_sql += " and (props like $term or description like $term or content like $term )";
-        prm.$term = '%' + term + '%'
+         prm.$term = '%' + term + '%'
       }
 
       if (request.query.myfiles) {
@@ -330,6 +330,7 @@
             })
           },
           function(cb) {
+            console.log(sql + more_sql + offset_sql)
             db.all(sql + more_sql + offset_sql, prm, function(err, docs) {
               if (err) {
                 cb(err, null)

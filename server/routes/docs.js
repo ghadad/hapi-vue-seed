@@ -83,41 +83,46 @@ module.exports = [{
     handler: function(request, reply) {
       let db = this.db;
       let docs_group_exists = true;
-      db.get("select *  from docs_group where batch_id = ?", [request.params.batch_id], function(err, result) {
-        if (err) {
-          return reply("Failed to docs_group").code(401);
-        }
-
-        if (!result) {
-          docs_group_exists = false;
-        }
-        result.props = JSON.parse((result.props || "{}"));
-        db.all("select * from docs where batch_id = ? ", [request.params.batch_id], (docserr, docs) => {
-          if (docserr) {
-            return reply("Failed to fetch grouped docs").code(401)
+      db.get("Select docs_group.*,users.name  from docs_group " +
+        " left  join users on docs_group.created_by = users.id  " +
+        " where batch_id = ?", [request.params.batch_id],
+        function(err, result) {
+          if (err) {
+            return reply("Failed to get docs_group " + err).code(401);
           }
-          let retdocs = [];
-          docs.forEach(d => {
-            let defaultThumb = "imgs" + path.sep + "iconthumb" + path.extname(d.filename) + ".png" // returns '.html'
-            d.thumb = (path.extname(d.filename).match(/(jpeg|jpg|png|bmp)$/i) ?
-              path.resolve(request.server.app.config.uploadPublicDirectory, d.batch_id, "thumbs", d.filename) : defaultThumb);
-            retdocs.push({
-              filename: d.filename,
-              thumb: d.thumb,
-              id: d.id,
-              created_by: d.created_by
+
+          if (!result) {
+            docs_group_exists = false;
+          } else {
+            result.props = JSON.parse((result.props || "{}"));
+          }
+          db.all("select * from docs where batch_id = ? ", [request.params.batch_id], (docserr, docs) => {
+            if (docserr) {
+              return reply("Failed to fetch grouped docs").code(401)
+            }
+            let retdocs = [];
+            docs.forEach(d => {
+              let defaultThumb = "imgs" + path.sep + "iconthumb" + path.extname(d.filename) + ".png" // returns '.html'
+              d.thumb = (path.extname(d.filename).match(/(jpeg|jpg|png|bmp)$/i) ?
+                path.resolve(request.server.app.config.uploadPublicDirectory, d.batch_id, "thumbs", d.filename) : defaultThumb);
+              retdocs.push({
+                pathurl : path.resolve(request.server.app.config.uploadPublicDirectory, d.batch_id, d.filename),
+                filename: d.filename,
+                thumb: d.thumb,
+                id: d.id,
+                created_by: d.created_by
+              })
+            })
+
+
+            return reply({
+              batch_id: request.params.batch_id,
+              docs_group: result,
+              docs_group_exists: docs_group_exists,
+              docs: retdocs
             })
           })
-
-
-          return reply({
-            batch_id: request.params.batch_id,
-            docs_group: result,
-            docs_group_exists: docs_group_exists,
-            docs: retdocs
-          })
-        })
-      });
+        });
     }
   }, {
     method: 'get',
@@ -222,7 +227,7 @@ module.exports = [{
         }
         if (result) {
           console.log(request.payload)
-          db.run("update docs_group set description =? , content =? ,created_by = ?,props = ?  where batch_id = ? ", [request.payload.description, request.payload.content, request.auth.credentials.profile.id, JSON.stringify(request.payload.props), request.payload.batch_id], (err, res) => {
+          db.run("update docs_group set description =? , content =? ,props = ?  where batch_id = ? ", [request.payload.description, request.payload.content,  JSON.stringify(request.payload.props), request.payload.batch_id], (err, res) => {
             if (err) return reply({
               success: false,
               err: err

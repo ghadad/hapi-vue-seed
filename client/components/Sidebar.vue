@@ -21,25 +21,12 @@
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                 <img id="profile_pic" class="img-responsive img-circle" :src="'https://graph.facebook.com/v2.9/'+account.facebook.id+'/picture'" />
                 <strong> {{account.facebook.displayName}} </strong>
-            <span class="caret"></span></a>
-            <ul class="dropdown-menu">
-
-              <li v-if="account.facebook.admin">
-                <router-link :to="{ path: 'admin/props'}">מאפייני מסמכים :מנהלים בלבד</router-link>
-              </li>
-              <li v-if="account.facebook.admin">
-                <router-link :to="{ path: 'news'}">חדשות/נעוצים :מנהלים בלבד</router-link>
-              </li>
-              <li>
-                <router-link :to="{ path: 'message'}"> <i class="glyphicon glyphicon-envelope"></i> שלח הודעה למנהלי האתר </router-link>
-              </li>
-              <li><a v-show="account.facebook.id" href="/api/facebook/logout"> <i class="glyphicon glyphicon-log-out"></i> יציאה מהאתר </a></li>
-            </ul>
+        </a>
           </li>
         </ul>
         <ul v-if="account.facebook.id" class="nav navbar-nav navbar-right">
           <li>
-            <router-link :to="{ path: 'myfiles'}"> המסמכים שלי &nbsp;<i class="glyphicon glyphicon-folder-open"></i></router-link>
+            <router-link :to="{ path: 'myfiles'}"> הקבצים שלי &nbsp;<i class="glyphicon glyphicon-folder-open"></i></router-link>
           </li>
           <li>
             <router-link :to="{ path: 'upload'}"> שיתוף קבצים <i class="glyphicon glyphicon-cloud-upload"></i></router-link>
@@ -47,9 +34,22 @@
           <li>
             <router-link :to="{ path: 'search'}"> חיפוש <i class="glyphicon glyphicon-search"></i></router-link>
           </li>
-          <li>
-            <router-link :to="{ path: 'donate'}"> תרומה <img style="height:18px" src="/img/donate.png"></router-link>
+          <li><a v-show="account.facebook.id" href="/api/facebook/logout"> <i class="glyphicon glyphicon-log-out"></i> יציאה מהאתר </a></li>
+
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                <strong>ניהול</strong>
+            <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+
+              <li v-if="account.facebook.admin">
+                <router-link :to="{ path: 'admin/props'}">סיווג מסמכים</router-link>
+              </li>
+            </ul>
           </li>
+          <!--li>
+            <router-link :to="{ path: 'donate'}"> תרומה <img style="height:18px" src="/img/donate.png"></router-link>
+          </li-->
 
 
         </ul>

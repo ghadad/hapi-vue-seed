@@ -132,8 +132,6 @@ td.td_profile {
   position: relative;
 }
 .tags {
-  position: absolute;
-  bottom: 7px;
 }
 .tag {
   font-size: 13px;
@@ -144,6 +142,11 @@ td.td_profile {
   min-width: 60px;
   width: 60px;
   max-width: 75px;
+}
+.td_index {
+  min-width: 50px;
+  width: 50px;
+  max-width: 65px;
 }
 .enlarge {
   cursor: zoom-in;
@@ -236,8 +239,6 @@ td.td_profile {
   position: relative;
 }
 .tags {
-  position: absolute;
-  bottom: 7px;
 }
 .tag {
   font-size: 13px;
@@ -475,6 +476,13 @@ td.td_file h4 {
 .code {
   direction: ltr;
   text-align: left
+}
+.enlarge {
+  cursor: zoom-in;
+}
+i.download_thumb {
+  height: 25px;
+  line-height: 35px
 }
 
 /*# sourceMappingURL=style.css.map*/

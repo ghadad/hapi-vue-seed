@@ -18,20 +18,6 @@ module.exports = {
       env_production : {
         NODE_ENV: "production"
       }
-    },
-    {
-    name      : "DEV",
-    script    : "app.js",
-    instances  : 0,
-    watch       : true,
-    exec_mode  : "cluster" ,
-      env: {
-        COMMON_VARIABLE: "true" ,
-        NODE_ENV: "development"
-      },
-      env_development : {
-        NODE_ENV: "development"
-      }
     }
   ]
 
