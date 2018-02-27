@@ -3,20 +3,20 @@
   <div class="col-md-12">
     <router-link :to="{path:'/myfiles'}">
       <h1>הקבצים שלי </h1></router-link>
-    <div class="text-center ">
-
+     <div class="text-center ">
+   
       <form @submit.prevent class="form form-inline ">
         <div class="form-group ">
 
           <input type="search " class="form-control " v-model="term " placeholder=" ">
-          <button class="btn btn-primary " @click="search( 'init') ">חיפוש</button>
+          <button class="btn btn-primary "  @click="search( 'init') ">חיפוש</button>
         </div>
       </form>
     </div>
 
-    <pagination :page="page " :totalPages="totalPages " :totalRows="totalRows " :displayPages="20 " @setPage="(val)=> { this.setPage(val)}"></pagination>
+    <pagination :page="page" :totalPages="totalPages " :totalRows="totalRows " :displayPages="20 " @setPage="(val)=> { this.setPage(val)}"></pagination>
 
-    <table class="table table-striped">
+    <table class="table table-striped"> 
       <thead>
         <td></td>
       </thead>
@@ -43,7 +43,7 @@
             <div class="" v-if="r.props">תגיות :
               <span v-for="k in Object.keys(r.props)">
 
-              <router-link v-for="p in r.props[k]" :to="{ name: 'myfiles', query: {term:p,tag:true,init:true}}">
+              <router-link v-for="p in r.props[k]" :key="p" :to="{ name: 'myfiles', query: {term:p,tag:true,init:true}}">
                 <span class="tag label label-default">{{p}}</span>
               </router-link>
               </span>
@@ -119,7 +119,7 @@ export default {
       if (this.$route.query.page) this.page = this.$route.query.page;
       this.search();
     }
-  },
+  },  
   methods: {
     setPicModal(r) {
       this.modal.picUrl = r.pathurl;

@@ -2,11 +2,19 @@ import Vue from 'vue';
 
 Vue.prototype.$bus = new Vue({});
 
-import Tinymce from 'tinymce'
+import Moment from 'moment' ;
 
+ 
+const simpleDate = function(value) {
+   return moment(value).format('DD/MM/YYYY');
+}
+Vue.filter('simpleDate', simpleDate);
+
+import Editor from "./components/Editor.vue" ;
+Vue.component('editor', Editor)
 
 import LocalStorage from "store";
-Vue.prototype.$localdb = LocalStorage
+Vue.prototype.$localdb = LocalStorage 
 
 import Validator from './Validator.js';
 
@@ -36,7 +44,10 @@ Vue.prototype._ = _
 
 import Pagination from "./components/Pagination.vue"
 Vue.component('pagination', Pagination)
+
 Vue.config.debug = true
+Vue.config.devtools = true
+
 import App from './App.vue'
 
 import router from './router'

@@ -7,10 +7,14 @@
           <div class="intro-message text-center">
             <h1>מחסן היצירות של מורות משקיעות</h1>
             <h3>... גם מורים משקיעים</h3>
-            <div class="text-center">
+            <div v-show="display" class="text-center">
               <a v-show="!account.facebook.id" href="/api/facebook/login"><img id="fbloginimg" src="/img/fblogin.png" /></a>
               <a target="_blank" v-show="account.facebook.id" href="https://www.facebook.com/groups/397081443825167/">קבוצתנו בפייסבוק</a>
             </div>
+            <div v-show="not_member" class="text-center">
+              <h1>האתר פתוח לחברי וחברות קבוצת הפייסבוק המהוללת של מורות משקיעות
+              עימכם הסליחה</h1>
+           </div>
           </div>
 
         </div>
@@ -31,6 +35,8 @@ export default {
   name: "Home",
   data: function() {
     return {
+      display:true ,
+      not_member:false,
       msg: "Message from hello"
     }
   },

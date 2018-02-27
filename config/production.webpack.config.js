@@ -8,8 +8,8 @@ module.exports = {
   entry: ['./client/main.js'],
   output: {
     path: path.resolve(__dirname, '../public/'),
-    publicPath: '/',
-    filename: 'build/build.js'
+    publicPath: '/build/',
+    filename: 'bundle.js'
   },
   resolve: {
     modules: [path.join(__dirname, '../node_modules')],

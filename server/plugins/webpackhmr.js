@@ -7,13 +7,15 @@ function init(appconf) {
         const HapiWebpackDevMiddleware = require('hapi-webpack-dev-middleware');
         const HapiWebpackHotMiddleware = require('hapi-webpack-hot-middleware');
 
+		console.log(WebpackConfig.output);
         internals = [{
                 name: "hmr",
                 register: HapiWebpackDevMiddleware,
                 options: {
                     config: WebpackConfig,
                     options: {
-                        noInfo: true,
+                       // stats: 'errors-only',
+                        noInfo: false,
                         publicPath: WebpackConfig.output.publicPath,
                         stats: {
                             colors: true

@@ -72,7 +72,6 @@ export default {
         facebook: vm.profile
       });
     }).catch(err => {
-
       this.$router.push("/")
     });
 

@@ -26,13 +26,13 @@
         </ul>
         <ul v-if="account.facebook.id" class="nav navbar-nav navbar-right">
           <li>
-            <router-link :to="{ path: 'myfiles'}"> הקבצים שלי &nbsp;<i class="glyphicon glyphicon-folder-open"></i></router-link>
+            <router-link :to="{ path: '/myfiles'}"> הקבצים שלי &nbsp;<i class="glyphicon glyphicon-folder-open"></i></router-link>
           </li>
           <li>
-            <router-link :to="{ path: 'upload'}"> שיתוף קבצים <i class="glyphicon glyphicon-cloud-upload"></i></router-link>
+            <router-link :to="{ path: '/upload'}"> שיתוף קבצים <i class="glyphicon glyphicon-cloud-upload"></i></router-link>
           </li>
           <li>
-            <router-link :to="{ path: 'search'}"> חיפוש <i class="glyphicon glyphicon-search"></i></router-link>
+            <router-link :to="{ path: '/search'}"> חיפוש <i class="glyphicon glyphicon-search"></i></router-link>
           </li>
           <li><a v-show="account.facebook.id" href="/api/facebook/logout"> <i class="glyphicon glyphicon-log-out"></i> יציאה מהאתר </a></li>
 
@@ -43,7 +43,7 @@
             <ul class="dropdown-menu">
 
               <li v-if="account.facebook.admin">
-                <router-link :to="{ path: 'admin/props'}">סיווג מסמכים</router-link>
+                <router-link :to="{ path: '/admin/props'}">סיווג מסמכים</router-link>
               </li>
             </ul>
           </li>

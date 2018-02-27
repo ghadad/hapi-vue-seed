@@ -23,11 +23,11 @@
             name: 'Home',
             component: Home
           }, {
-            path: '/',
+            path: '/', 
             name: 'Home',
             component: Home
           },
-          {
+          { 
             path: '/donate',
             name: 'Donate',
             component: Donate

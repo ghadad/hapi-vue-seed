@@ -8,10 +8,10 @@ import Store from "../store";
 
 export default {
   data() {
-    return {
+      return {
       msg: "Hello . I'm vue"
     }
-  },
+   },
   mounted() {
     let vm = this;
     if (this.$route.query.batch_id) {

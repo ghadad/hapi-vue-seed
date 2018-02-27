@@ -55,7 +55,7 @@ server.register([
   };
 });
 
-
+ 
 
 server.register([Inert], function(err) {
 
@@ -69,7 +69,7 @@ server.register([Inert], function(err) {
     config: {
       auth: false,
       cache: {
-        expiresIn: 0, //(process.env.NODE_ENV == "production" ? 24 * 60 * 60 * 1000 : 0),
+        expiresIn: 1, //(process.env.NODE_ENV == "production" ? 24 * 60 * 60 * 1000 : 0),
         privacy: 'public'
       }
     },

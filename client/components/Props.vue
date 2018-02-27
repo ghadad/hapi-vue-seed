@@ -20,7 +20,7 @@
         <td>
           <div class="well well-sm">
             <ul class="list-group">
-              <li class="list-group-item" v-for="(p,index) in docsProps.cat2"><i @click="removeProp('cat2',index)" class="glyphicon glyphicon-remove-sign "></i> {{p}}</li>
+               <li class="list-group-item" v-for="(p,index) in docsProps.cat2"><i @click="removeProp('cat2',index)" class="glyphicon glyphicon-remove-sign "></i> {{p}}</li>
             </ul>
           </div>
         </td>

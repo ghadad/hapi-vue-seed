@@ -7,7 +7,7 @@
       </a>
       <div class="media-body">
         <h4 class="media-heading">{{folder.docs_group.name}}</h4>
-        <p class="by-author">עלה בתאריך :</p>
+        <p class="by-author">עלה בתאריך : {{folder.docs_group.creation_date | simpleDate}}</p>
       </div>
     </div>
 
@@ -95,7 +95,9 @@ export default {
         title: "",
         picUrl: ""
       },
-      folder: {},
+      folder: {
+        docs_group: {}
+      },
       msg: "Hello . I'm vue"
     }
   },
