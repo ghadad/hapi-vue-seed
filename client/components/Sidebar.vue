@@ -26,10 +26,10 @@
         </ul>
         <ul v-if="account.facebook.id" class="nav navbar-nav navbar-right">
           <li>
-            <router-link :to="{ path: '/myfiles'}"> הקבצים שלי &nbsp;<i class="glyphicon glyphicon-folder-open"></i></router-link>
+            <router-link :to="{ path: '/myfiles'}"> התיקיות שלי &nbsp;<i class="glyphicon glyphicon-folder-open"></i></router-link>
           </li>
           <li>
-            <router-link :to="{ path: '/upload'}"> שיתוף קבצים <i class="glyphicon glyphicon-cloud-upload"></i></router-link>
+            <router-link :to="{ path: '/upload'}"> שיתוף תיקיות <i class="glyphicon glyphicon-cloud-upload"></i></router-link>
           </li>
           <li>
             <router-link :to="{ path: '/search'}"> חיפוש <i class="glyphicon glyphicon-search"></i></router-link>
@@ -44,6 +44,8 @@
 
               <li v-if="account.facebook.admin">
                 <router-link :to="{ path: '/admin/props'}">סיווג מסמכים</router-link>
+
+                <a href="http://docs.morotmashkiot.co.il/api/import/facebook/members" target="_BLANK">ייבוא חברי הקבוצה של פייסבוק <b>)(לא להריץ יותר מפעם ביום)</b></a>
               </li>
             </ul>
           </li>

@@ -68,10 +68,10 @@ server.register([Inert], function(err) {
     path: '/{filename*}',
     config: {
       auth: false,
-      cache: {
-        expiresIn: 1, //(process.env.NODE_ENV == "production" ? 24 * 60 * 60 * 1000 : 0),
-        privacy: 'public'
-      }
+    //  cache: {
+    //    expiresIn: 0, //(process.env.NODE_ENV == "production" ? 24 * 60 * 60 * 1000 : 0),
+    //    privacy: 'public'
+      //}
     },
     handler: {
       directory: {

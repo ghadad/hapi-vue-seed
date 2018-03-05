@@ -37,10 +37,19 @@
           <td class="td_file">
             <h4> <router-link :to="{path:'folder',query:{batch_id:r.batch_id}}">{{r.description}}</router-link></h4>
             <!--h5> <a :href="'/api/docs/getfile/'+r.id"> {{r.filename}} </a></h5-->
-            <div class="" v-if="r.props">תגיות :
-              <span v-for="k in Object.keys(r.props)">
-
-              <router-link v-for="p in r.props[k]" :to="{ name: 'Search', query: {term:p,tag:true,init:true}}">
+            <div class="">תגיות :
+               <span v-for="p in r.props1">
+                 <router-link  :to="{ name: 'myfiles', query: {term:p,tag:true,init:true}}">
+                <span class="tag label label-default">{{p}}</span>
+              </router-link>
+              </span>
+			  <span v-for="p in r.props2">
+                 <router-link  :to="{ name: 'myfiles', query: {term:p,tag:true,init:true}}">
+                <span class="tag label label-default">{{p}}</span>
+              </router-link>
+              </span>
+			  <span v-for="p in r.props3">
+                 <router-link  :to="{ name: 'myfiles', query: {term:p,tag:true,init:true}}">
                 <span class="tag label label-default">{{p}}</span>
               </router-link>
               </span>

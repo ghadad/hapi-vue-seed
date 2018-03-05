@@ -294,16 +294,18 @@
       if (request.query.term) {
         let term = request.query.term.replace(/[\+\s]/g, "%").replace(/\%+/g, "%");
         if (request.query.tag == "true" || request.query.tag == true)
-          more_sql += " and (props like $term) ";
+          more_sql += " and (props1||props2||props3 like $term) ";
         else
-          more_sql += " and (props like $term or description like $term or content like $term )";
+          more_sql += " and (props1||props2||props3 like $term or description like $term or content like $term )";
          prm.$term = '%' + term + '%'
       }
 
       if (request.query.myfiles) {
         more_sql += " and created_by = $id ";
         prm.$id = request.auth.credentials.profile.id
-      }
+      } else { 
+	   more_sql += " and docs_group.active = 1 "
+	  }
 
       // PAGES
       let pageSize = request.query.pageSize || 100;
@@ -346,11 +348,15 @@
                   //  id: d.id,
                   //  md5: d.md5,
                     description: d.description,
+					active:d.active,
                     batch_id: d.batch_id,
                     created_by: d.created_by,
                     facebook_name: d.name,
                     facebook_pic_url: "http://graph.facebook.com/v2.9/" + d.created_by + "/picture",
                     props: JSON.parse(d.props),
+					props1:JSON.parse(d.props1||"[]"),
+					props2:JSON.parse(d.props2||"[]"),
+					props3:JSON.parse(d.props3||"[]")
                     //pathurl: path.resolve(request.server.app.config.uploadPublicDirectory, d.batch_id, d.filename),
                     //enlarge: (d.filename.match(/(jpeg|jpg|png|bmp)$/i) ? true : false),
                     //thumb: (d.filename.match(/(jpeg|jpg|png|bmp)$/i) ?

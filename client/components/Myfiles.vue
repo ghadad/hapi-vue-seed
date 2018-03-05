@@ -1,22 +1,21 @@
 <template>
 <div id="myfiles" class="row">
   <div class="col-md-12">
-    <router-link :to="{path:'/myfiles'}">
-      <h1>הקבצים שלי </h1></router-link>
-     <div class="text-center ">
-   
+    <h3>התיקיות שלי</h3>
+    <div class="text-center ">
       <form @submit.prevent class="form form-inline ">
         <div class="form-group ">
 
           <input type="search " class="form-control " v-model="term " placeholder=" ">
-          <button class="btn btn-primary "  @click="search( 'init') ">חיפוש</button>
+          <button class="btn btn-primary " @click="search( 'init') ">חיפוש</button>
         </div>
       </form>
     </div>
-
     <pagination :page="page" :totalPages="totalPages " :totalRows="totalRows " :displayPages="20 " @setPage="(val)=> { this.setPage(val)}"></pagination>
 
-    <table class="table table-striped"> 
+    <div class="not-found alert alert-danger" v-show="notFound==true">לא נמצאו תיקיות מתאימות לחיפוש</div>
+
+    <table class="table table-striped">
       <thead>
         <td></td>
       </thead>
@@ -38,12 +37,27 @@
             <a :href="'/api/docs/getfile/'+r.id">  <i class="download_thumb glyphicon glyphicon-download"></i>
           <br />הורדה </a></td-->
           <td class="td_file">
-            <h4> <router-link :to="{path:'folder',query:{batch_id:r.batch_id}}">{{r.description}}</router-link></h4>
-            <!--h5> <a :href="'/api/docs/getfile/'+r.id"> {{r.filename}} </a></h5-->
-            <div class="" v-if="r.props">תגיות :
-              <span v-for="k in Object.keys(r.props)">
 
-              <router-link v-for="p in r.props[k]" :key="p" :to="{ name: 'myfiles', query: {term:p,tag:true,init:true}}">
+            <h4>
+                  <router-link class="label label-default" :to="{path:'upload',query:{batch_id:r.batch_id}}"><i class="glyphicon glyphicon-pencil"></i></router-link>
+                  <div v-show="r.active" class="label label-success">פעיל</div>
+                <div v-show="!r.active" class="label label-danger">ממתין לפרסום</div>
+
+                <router-link :to="{path:'folder',query:{batch_id:r.batch_id}}">{{r.description}}</router-link></h4>
+            <!--h5> <a :href="'/api/docs/getfile/'+r.id"> {{r.filename}} </a></h5-->
+            <div class="">תגיות :
+              <span v-for="p in r.props1">
+                 <router-link  :to="{ name: 'myfiles', query: {term:p,tag:true,init:true}}">
+                <span class="tag label label-default">{{p}}</span>
+              </router-link>
+              </span>
+              <span v-for="p in r.props2">
+                 <router-link  :to="{ name: 'myfiles', query: {term:p,tag:true,init:true}}">
+                <span class="tag label label-default">{{p}}</span>
+              </router-link>
+              </span>
+              <span v-for="p in r.props3">
+                 <router-link  :to="{ name: 'myfiles', query: {term:p,tag:true,init:true}}">
                 <span class="tag label label-default">{{p}}</span>
               </router-link>
               </span>
@@ -77,6 +91,7 @@ import Store from "../store";
 export default {
   data() {
     return {
+      notFound: false,
       modal: {
         title: "",
         picUrl: ""
@@ -119,7 +134,7 @@ export default {
       if (this.$route.query.page) this.page = this.$route.query.page;
       this.search();
     }
-  },  
+  },
   methods: {
     setPicModal(r) {
       this.modal.picUrl = r.pathurl;
@@ -145,7 +160,9 @@ export default {
       this.search();
     },
     search(initQ) {
+
       let vm = this;
+      vm.notFound = false;
       if (initQ == 'init') {
         vm.page = 0;
         vm.$router.push({
@@ -171,7 +188,9 @@ export default {
         if (vm.page == 0) {
           vm.totalPages = res.data.totalPages
           vm.totalRows = res.data.count
-
+          if (vm.totalRows == 0) {
+            vm.notFound = true;
+          }
         }
 
       }).catch(err => {
@@ -208,6 +227,10 @@ td.td_thumb {
 
 .td_thumb img {
   width: 100%;
+}
+
+.not-found {
+  margin: 10px
 }
 
 td.td_profile {

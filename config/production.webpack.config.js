@@ -3,11 +3,24 @@ const webpack = require('webpack')
 
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+
+let pathsToClean = [
+  'build',
+  "index.html"
+]
+// the clean options to use
+let cleanOptions = {
+  root:     '/home/amir/hapi-teachers/public',
+  verbose:  true,
+  dry:      false
+};
+
 
 module.exports = {
   entry: ['./client/main.js'],
   output: {
-    path: path.resolve(__dirname, '../public/'),
+    path: path.resolve(__dirname, '../public/build'),
     publicPath: '/build/',
     filename: 'bundle.js'
   },
@@ -16,7 +29,7 @@ module.exports = {
     extensions: ['.js', '.vue'],
     alias: {
       'client': path.resolve(__dirname, '../client'),
-      'components': path.resolve(__dirname, '../clients/components'),
+      'components': path.resolve(__dirname, '../client/components'),
       'vue$': 'vue/dist/vue.common.js'
     }
   },
@@ -47,6 +60,7 @@ module.exports = {
     }]
   },
   plugins: [
+    //new CleanWebpackPlugin(pathsToClean, cleanOptions),
     new webpack.ProvidePlugin({
       Vue: 'vue$',
       jQuery: 'jquery',

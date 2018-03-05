@@ -3,6 +3,7 @@
 const path = require("path");
 
 const Boom = require("boom");
+var zipdir = require('zip-dir');
 
 var Controller = require('../controllers/docsController');
 
@@ -95,6 +96,9 @@ module.exports = [{
             docs_group_exists = false;
           } else {
             result.props = JSON.parse((result.props || "{}"));
+			 result.props1 = JSON.parse((result.props1 || "[]"));
+			  result.props2 = JSON.parse((result.props2 || "[]"));
+			   result.props3 = JSON.parse((result.props3 || "[]"));
           }
           db.all("select * from docs where batch_id = ? ", [request.params.batch_id], (docserr, docs) => {
             if (docserr) {
@@ -151,6 +155,23 @@ module.exports = [{
         });
       })
 
+    }
+  }, {
+    method: 'get',
+    path: '/api/docs/getzip/{batch_id}',
+    handler: function(request, reply) {
+		let db = this.db;
+		db.get("select path from docs where batch_id =?", [request.params.batch_id], function(err, result) {
+			if(err) return reply({err:err})
+			//return reply(result);
+		    zipdir(result.path,  { filter: (path, stat) => !/thumbs/.test(path) } ,function (err, buffer) {
+				let fileName ="morotmashkiot.zip";
+			   if(err) return reply({err:err})
+			   return reply(buffer).type('application/zip').
+				header('content-disposition', 'attachment; filename='+fileName+';');
+		    });
+	})
+			
     }
   }, {
     method: 'get',
@@ -227,8 +248,8 @@ module.exports = [{
         }
         if (result) {
           console.log(request.payload)
-          db.run("update docs_group set description =? , content =? ,props = ? ,update_date = ? where batch_id = ? ",
-           [request.payload.description, request.payload.content,  JSON.stringify(request.payload.props), now,request.payload.batch_id], (err, res) => {
+          db.run("update docs_group set description =? , content =? ,props = ? , props1=? ,props2 = ? ,props3 =? ,update_date = ? where batch_id = ? ",
+           [request.payload.description, request.payload.content,  JSON.stringify(request.payload.props),JSON.stringify(request.payload.props1),JSON.stringify(request.payload.props2),JSON.stringify(request.payload.props3), now,request.payload.batch_id], (err, res) => {
             if (err) return reply({
               success: false,
               err: err
@@ -239,10 +260,10 @@ module.exports = [{
               })
           })
         } else {
-          db.run("insert into docs_group (description,content,created_by,props,batch_id,creation_date) values(?,?,?,?,?,?)",
-           [request.payload.description, request.payload.content, request.auth.credentials.profile.id, JSON.stringify(request.payload.props), request.payload.batch_id,now], (err, res) => {
+          db.run("insert into docs_group (description,content,created_by,props,props1,props2,props3,batch_id,creation_date) values(?,?,?,?,?,?,?,?,?)",
+           [request.payload.description, request.payload.content, request.auth.credentials.profile.id, JSON.stringify(request.payload.props),JSON.stringify(request.payload.props1),JSON.stringify(request.payload.props2),JSON.stringify(request.payload.props3), request.payload.batch_id,now], (err, res) => {
             if (err) return reply({
-              success: false
+              success: false,err:err
             })
             else
               return reply({

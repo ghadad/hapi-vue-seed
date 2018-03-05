@@ -6,48 +6,62 @@
       <img class="img-circle" :src="getUserPic(folder.docs_group.created_by)">
       </a>
       <div class="media-body">
-        <h4 class="media-heading">{{folder.docs_group.name}}</h4>
+        <h4>{{folder.docs_group.name}}</h4>
         <p class="by-author">עלה בתאריך : {{folder.docs_group.creation_date | simpleDate}}</p>
       </div>
     </div>
 
   </div>
-  <h3>
 
-    <span v-if="account.facebook.admin || account.facebook.id==folder.docs_group.created_by">
-    <router-link :to="{path:'upload',query: { batch_id: folder.batch_id }}"><i class="glyphicon glyphicon-pencil"></i></router-link>
-  </span>
-
-  אוגדן : {{folder.docs_group.description}}</h3>
-  <div class="col-md-12" v-if="folder.docs_group.props">תגיות :
-    <div v-for="k in Object.keys(folder.docs_group.props)" :class="k">
-      <router-link v-for="p in folder.docs_group.props[k]" :to="{ name: 'Search', query: {term:p,tag:true,init:true}}">
-        <span class="tag label label-default">{{p}}</span>
-      </router-link>
-    </div>
-  </div>
   <div v-if="folder.docs_group_exists">
     <div class="row">
       <div class="col-md-7">
-        <div class="content" v-html="folder.docs_group.content"></div>
-      </div>
-      <div class="col-md-5">
-        <div class="row">
+        <h3>
+          <span v-if="account.facebook.admin || account.facebook.id==folder.docs_group.created_by">
+          <router-link  class="label label-primary" :to="{path:'upload',query: { batch_id: folder.batch_id }}"><i class="glyphicon glyphicon-pencil"></i></router-link>
+        </span>
+        {{folder.docs_group.description}}</h3>
 
-          <div class="files col-md-12">קבצים באוגדן :
-            <table class="table table-striped">
+        <div class="alert alert-info">
+          <h4> תגיות :</h4>
+          <div>
+            <router-link v-for="p in folder.docs_group.props1" :key="p" :to="{ name: 'Search', query: {term:p,tag:true,init:true}} ">
+              <span class="tag label label-primary ">{{p}}</span>
+            </router-link>
+          </div>
+          <div>
+            <router-link v-for="p in folder.docs_group.props2" :key="p" :to="{ name: 'Search', query: {term:p,tag:true,init:true}} ">
+              <span class="tag label label-info ">{{p}}</span>
+            </router-link>
+          </div>
+          <div>
+            <router-link v-for="p in folder.docs_group.props3" :key="p" :to="{ name: 'Search', query: {term:p,tag:true,init:true}} ">
+              <span class="tag label label-default ">{{p}}</span>
+            </router-link>
+          </div>
+        </div>
+        <div class="content " v-html="folder.docs_group.content "></div>
+      </div>
+      <div class="col-md-5 ">
+        <div class="row ">
+
+          <div class="files col-md-12 ">
+            <h3>            קבצים בתיקיה :
+            <a v-show="folder.docs.length " class="btn btn-sm btn-primary " :href=" 'api/docs/getzip/'+folder.batch_id ">הורידו את כל הקבצים <i class="glyphicon glyphicon-download-alt "></i> </a>
+          </h3>
+            <table class="table table-striped ">
               <thead>
                 <td></td>
               </thead>
               <tbody>
-                <tr v-for="(r,index) in folder.docs">
-                  <td> <span class="badge">{{index+1}}</span></td>
-                  <td class="td_thumb"><a type="button" data-toggle="modal" @click="setPicModal(r)" data-target="#myModal">
-               <img :class="{'enlarge':r.enlarge}" v-if="r.thumb" :src="r.thumb" /></a></td>
-                  <td class="td_download text-center">
-                    <a :href="'/api/docs/getfile/'+r.id">  <i class="download_thumb glyphicon glyphicon-download"></i>
+                <tr v-for="(r,index) in folder.docs ">
+                  <td> <span class="badge ">{{index+1}}</span></td>
+                  <td class="td_thumb "><a type="button " data-toggle="modal " @click="setPicModal(r) " data-target="#myModal ">
+               <img :class="{ 'enlarge':r.enlarge} " v-if="r.thumb " :src="r.thumb " /></a></td>
+                  <td class="td_download text-center ">
+                    <a :href=" '/api/docs/getfile/'+r.id ">  <i class="download_thumb glyphicon glyphicon-download "></i>
                       <br />הורדה </a></td>
-                  <td class="td_file">
+                  <td class="td_file ">
 
                     <h4>{{r.filename}} </h4>
 
@@ -56,8 +70,8 @@
                 </tr>
               </tbody>
             </table>
-            <div v-if="!folder.docs.length">
-              <h4>לא קיימים קבצים באוגדן זה</h4>
+            <div v-if="!folder.docs.length ">
+              <h4>לא קיימים קבצים בתיקיה זה</h4>
             </div>
           </div>
         </div>
@@ -65,18 +79,18 @@
     </div>
 
 
-    <!--pre class="english code">{{folder}}</pre>
-    <pre class="english code">{{account}}</pre-->
+    <!--pre class="english code ">{{folder}}</pre>
+    <pre class="english code ">{{account}}</pre-->
   </div>
-  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel">{{modal.title}}</h4>
+  <div class="modal fade " id="myModal " tabindex="-1 " role="dialog " aria-labelledby="myModalLabel ">
+    <div class="modal-dialog modal-lg " role="document ">
+      <div class="modal-content ">
+        <div class="modal-header ">
+          <button type="button " class="close " data-dismiss="modal " aria-label="Close "><span aria-hidden="true ">&times;</span></button>
+          <h4 class="modal-title " id="myModalLabel ">{{modal.title}}</h4>
         </div>
-        <div class="modal-body">
-          <img :src="modal.picUrl">
+        <div class="modal-body ">
+          <img :src="modal.picUrl ">
         </div>
       </div>
     </div>

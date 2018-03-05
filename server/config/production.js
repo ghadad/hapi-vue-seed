@@ -7,7 +7,7 @@ module.exports = {
   db: {
     storage: process.cwd() + "/db/app.prod.db"
   },
-  port: 3001,
+  port: 3000,
   uploadDirectory: uploadPath,
   uploadPublicDirectory: "/upload/prod",
   host: "127.0.0.1",

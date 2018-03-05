@@ -1,103 +1,72 @@
 <template>
 <div id="upload">
   <div class="row">
-    <div class="col-md-12"> 
-      <h3>  קוד תיקיה : {{batch_id}} </h3>
-      <h3><button v-show="canPublish && !active" class="btn btn-lg" @click="setStatus(1)">פרסם אוגדן</button>
-        <button v-show="active" class="btn btn-lg btn-danger" @click="setStatus(0)">בטל פרסום</button>
-  <button @click="saveBatch()" v-if="description && !descriptionError" class="btn btn-lg btn-primary">שמור</button>
-  <button class="btn btn-lg btn-primary" v-show="canNew!=1" @click="canNew=1">אוגדן חדש</button>
-  <button class="btn btn-lg btn-primary" v-show="canNew==1" @click="getNew()">נא אשרו</button>
-  <button class="btn btn-lg btn-danger" @click="deleteGroupLevel=1" v-show="canDelete && deleteGroupLevel==0">מחק אוגדן</button>
-  <button class="btn btn-lg btn-danger" @click="deleteGroup(1)" v-show="deleteGroupLevel==1">לחצו שוב לאישור</button>
-</h3>
+    <div class="col-md-12">
+      <h4><span v-show="active" class="badge label-success">פוסט פעיל</span>
+        <span v-show="!active" class="badge  label-danger"> ממתין לפרסום </span>
+         קוד תיקיה :  {{batch_id}}      </h4>
+      <h4><button v-show="canPublish && !active" class="btn btn-md" @click="setStatus(1)">פרסם תיקיה</button>
+        <button v-show="active" class="btn btn-md btn-danger" @click="setStatus(0)">בטל פרסום</button>
+        <button @click="saveBatch()" v-if="description && !descriptionError" class="btn btn-md btn-primary">שמור</button>
+        <button class="btn btn-md btn-primary" v-show="canNew!=1" @click="canNew=1">תיקיה חדש</button>
+        <button class="btn btn-md btn-primary" v-show="canNew==1" @click="getNew()">נא אשרו</button>
+        <button class="btn btn-md btn-danger" @click="deleteGroupLevel=1" v-show="canDelete && deleteGroupLevel==0">מחק תיקיה</button>
+        <router-link v-show="posted" class="btn btn-md btn-info" :to="{path:'folder',query: { batch_id: batch_id }}"><i class="glyphicon glyphicon-search"> </i> תצוגת תיקייה </router-link>
+    </h4>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
       <div class="form-group">
-        <label for="description">כותרת אוגדן</label>
-        <input type="text" v-model="description" class="form-control" id="description" placeholder="תאור קצר - לפחות  10 מילים">
+        <label for="description">כותרת</label>
+        <input type="text" v-model="description" class="form-control" id="description" placeholder="תאור קצר - ךלפחות 5 מילים">
         <div class="error">{{descriptionError}} </div>
       </div>
-      <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-        <div class="panel panel-default">
-          <div class="panel-heading" role="tab" id="headingOne">
-            <h4 class="panel-title">
-        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-        מילות מפתח
-        </a>
-      </h4>
-          </div>
-          <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-            <div class="panel-body">
-              <h4>נא תייג את האוגדן עם המאפיינים הבאים</h4>
-              <div class="cats well well-sm">קטגוריה 1:<span @click="toggleTag('cat1',$event)" class="label" :class="getClass('cat1',t)" v-for="t in availableDocsProps.cat1" :key="t">{{t}}</span></div>
-              <div class="cats well well-sm">קטגוריה 2 :<span @click="toggleTag('cat2',$event)" class="label" :class="getClass('cat2',t)" v-for="t in availableDocsProps.cat2" :key="t">{{t}}</span></div>
-              <div class="cats well well-sm">קטגוריה 3:<span @click="toggleTag('cat3',$event)" class="label" :class="getClass('cat3',t)" v-for="t in availableDocsProps.cat3" :key="t">{{t}}</span></div>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default">
-          <div class="panel-heading" role="tab" id="headingTwo">
-            <h4 class="panel-title">
-        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-        הוסיפו תוכן עשיר
-        </a>
-      </h4>
-          </div>
-          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
-            <div class="panel-body">
-              <editor ref="Editor" :content="reactive_content"></editor>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default">
-          <div class="panel-heading" role="tab" id="headingThree">
-            <h4 class="panel-title">
-        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-טעינת קבצים לאוגדן
-        </a>
-      </h4>
-          </div>
-          <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
-            <div class="panel-body">
-              <div v-show="description && !descriptionError">
+      <h4>			מילות מפתח - נא תייג את התיקיה עם המאפיינים הבאים </h4>
 
-                <dropzone id="myVueDropzone" url="/api/docs/upload" :use-custom-dropzone-options="true" :dropzone-options="dropzoneOptions" v-on:vdropzone-error="showSError">
-                  <input type="hidden" name="batch_id" :value="batch_id">
-                </dropzone>
-              </div>
-              <div class="alert alert-info">
-                <h4>הקבצים שהועלו לאוגדן</h4>
+      <div class="cats alert alert-info well-sm"><span @click="toggleTag('props1',$event)" class="btn btn-sm" :class="getClass('props1',t)" v-for="t in availableDocsProps.cat1" :key="t">{{t}}</span></div>
+      <div class="cats alert alert-info well-sm"><span @click="toggleTag('props2',$event)" class="btn btn-sm" :class="getClass('props2',t)" v-for="t in availableDocsProps.cat2" :key="t">{{t}}</span></div>
+      <div class="cats alert alert-info well-sm"><span @click="toggleTag('props3',$event)" class="btn btn-sm" :class="getClass('props3',t)" v-for="t in availableDocsProps.cat3" :key="t">{{t}}</span></div>
+      <editor ref="Editor" :content="reactive_content"></editor>
+    </div>
+    <div class="col-md-6">
+      <div class="alert alert-info">
+        <h4>קבצים בתיקייה</h4>
+        <div v-show="!posted" class="alert alert-info">בצעו שמירה ע"מ שתוכלו להעלות קבצים לתיקייה</div>
+        <dropzone v-show="posted" id="myVueDropzone" url="/api/docs/upload" :use-custom-dropzone-options="true" :dropzone-options="dropzoneOptions" v-on:vdropzone-error="showSError">
+          <input type="hidden" name="batch_id" :value="batch_id">
+        </dropzone>
+        <div v-show="!docs.length && posted" class="alert alert-default">עדיין לא העלת קבצים לתיקיה</div>
+        <table class="table table-borderd">
+          <tr class="list-group" v-for="(f,index) in docs">
+            <td style="width:110px" class="td_thumb">
+              <img class="thumb-item" :src="f.thumb" />
+            </td>
+            <td style="width:80%"> <strong>{{f.filename}}</strong>
+              <input placeholder="תאור קצר" v-model="f.description" class="form-control" />
 
-                <div v-show="!docs.length" class="well well-sm">עדיין לא העלת קבצים לאוגדן</div>
-                <table class="table table-borderd">
-                  <tr class="list-group" v-for="(f,index) in docs">
-                    <td style="width:110px" class="td_thumb">
-                      <img class="thumb-item" :src="f.thumb" />
-                    </td>
-                    <td style="width:80%"> <strong>{{f.filename}}</strong>
-                      <input placeholder="תאור קצר" v-model="f.description" class="form-control" />
-
-                    </td>
-                    <td class="td_btns">
-                      <button class="btn btn-danger btn-xs" v-show="!f.approveDelete" @click="deleteFile(f,1,index)">מחק</button>
-                      <button class="btn btn-danger btn-xs" v-show="f.approveDelete==1" @click="deleteFile(f,2,index)"> נא ליחצו שוב לאישור</button>
-                      <br />
-                      <button class="btn btn-primary btn-xs">שמור </button>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
+            </td>
+            <td class="td_btns">
+              <button class="btn btn-danger btn-xs" v-show="!f.approveDelete" @click="deleteFile(f,1,index)">מחק</button>
+              <button class="btn btn-danger btn-xs" v-show="f.approveDelete==1" @click="deleteFile(f,2,index)"> נא ליחצו שוב לאישור</button>
+              <br />
+              <button class="btn btn-primary btn-xs">שמור </button>
+            </td>
+          </tr>
+        </table>
       </div>
     </div>
-
   </div>
 
+
+
+</div>
+</div>
+</div>
 </div>
 </template>
 <script>
- import Dropzone from 'vue2-dropzone';
+import Dropzone from 'vue2-dropzone';
 import Store from "../store"
 
 export default {
@@ -106,7 +75,6 @@ export default {
   mounted() {
     let vm = this;
     vm.$http.get("/api/docs/props").then(res => {
-
       vm.$set(vm, 'availableDocsProps', res.data);
     }).catch(err => {
       vm.err = err;
@@ -116,6 +84,11 @@ export default {
   data() {
     let vm = this;
     return {
+      propsState: {
+        props1: {},
+        props2: {},
+        props3: {}
+      },
       canNew: 0,
       posted: 0,
       docsProps: {
@@ -161,6 +134,7 @@ export default {
         maxFilesize: 256 * 1000,
 
         addedfile: function(file) {
+          alert(file)
           vm.spin = true;
         },
         removedfile: function(file) {
@@ -208,6 +182,36 @@ export default {
       })
     },
 
+    setPropsState(d) {
+      let vm = this;
+
+      d.props1.forEach(function(p) {
+        console.log(":", p);
+        vm.$set(vm.propsState.props1, p, true);
+      });
+      d.props2.forEach(function(p) {
+        vm.$set(vm.propsState.props2, p, true);
+      });
+      d.props3.forEach(function(p) {
+        vm.$set(vm.propsState.props3, p, true);
+      });
+      console.log("vm.propsState", vm.propsState);
+
+    },
+    getPropsState(g) {
+      let vm = this;
+
+      d.props1.forEach(function(p) {
+        vm.$set(vm.propsState.props1[p], true);
+      });
+      d.props2.forEach(function(p) {
+        vm.$set(vm.propsState.props2[p], true);
+      });
+      d.props3.forEach(function(p) {
+        vm.$set(vm.propsState.props3[p], true);
+      });
+    },
+
     getData() {
       let vm = this;
       if (!vm.$route.query.batch_id) {
@@ -216,15 +220,13 @@ export default {
           vm.$http.get("/api/docs/getbatch/" + vm.batch_id).then(res => {
             vm.description = res.data.docs_group.description
             vm.$set(vm, 'content', res.data.docs_group.content);
-
+            vm.posted = true;
             vm.active = res.data.docs_group.active;
             vm.docs = res.data.docs;
-
-            vm.$set(vm, 'docsProps', vm.setProps(res.data.docs_group.props || {}));
-          }).catch(() => {
-          })
+            vm.setPropsState(res.data.docs_group);
+          }).catch(() => {})
         }).catch(() => {
-          alert("לא מצליח לייצר קוד אוגדן ")
+          alert("לא מצליח לייצר קוד תיקיה ")
         })
       } else {
         vm.batch_id = vm.$route.query.batch_id
@@ -235,79 +237,34 @@ export default {
           vm.description = res.data.docs_group.description || "י שלמלא תוכן";
           vm.$set(vm, 'content', res.data.docs_group.content);
           vm.active = res.data.docs_group.active;
-          vm.$set(vm, 'docsProps', vm.setProps((res.data.docs_group.props || {})));
+          vm.setPropsState(res.data.docs_group);
+          vm.posted = true;
           vm.$forceUpdate();
         }).catch(() => {
 
         })
       }
     },
-    toggleTag(g, event) {
-     
+    toggleTag(p, event) {
       let vm = this;
-      let real = event.currentTarget.innerText;
-      let prop = real.replace(/\s/g, '');
-      let ff = false;
-      
-      if (!vm.docsProps[g])
-        vm.$set(vm, 'docsProps', {
-          cat1: {},
-          cat2: {},
-          cat3: {}
-        })
-      if (!vm.docsProps[g][prop]) {
-        vm.$set(vm.docsProps[g], prop, {
-          status: false,
-          real: real
-        });
-        ff = true;
-      }
-      console.log("ff:",ff)
-      vm.$set(vm.docsProps[g], prop, {
-        status: ff,
-        real: real
-      });
+      vm.$set(vm.propsState[p], event.currentTarget.innerText, !vm.propsState[p][event.currentTarget.innerText]);
+      // console.log(JSON.parse(JSON.stringify(vm.propsState)))
     },
     getClass(g, p) {
       let vm = this;
-      if (typeof vm.docsProps[g] == "undefined") return "label-default"
-      if (!p) return "label-default"
-      let k = p.replace(/\s/g, '')
-      if (vm.docsProps[g][k] != undefined && vm.docsProps[g][k].status) return "label-primary";
-      else
-        return "label-default"
+      if (vm.propsState[g][p]) return "btn-primary";
+      return "btn-default";
     },
-    setProps(props) {
-
-      let retVal = {
-        cat1: {},
-        cat2: {},
-        cat3: {}
-      };
-      Object.keys(props).forEach(c => {
-        props[c].forEach(pp => {
-          let k = pp.replace(/\s/g, '');
-          retVal[c][k] = {
-            status: true,
-            real: pp
-          }
-        })
-      })
-
-      return retVal;
-    },
-    extractProps() {
+    extractProps(g) {
       let vm = this;
-      let retVal = {
-        cat1: [],
-        cat2: [],
-        cat3: []
-      };
-      ['cat1', 'cat2', 'cat3'].forEach(c => {
-        Object.keys(vm.docsProps[c]).forEach(p => {
-          retVal[c].push(vm.docsProps[c][p].real)
-        })
-      })
+
+      let retVal = [];
+      let props = Object.keys(vm.propsState[g])
+      props.forEach(function(p) {
+        console.log(p, props[g]);
+        if (vm.propsState[g][p]) retVal.push(p)
+      });
+      console.log(retVal);
       return retVal;
     },
     deleteGroup(level) {
@@ -341,13 +298,18 @@ export default {
     saveBatch(redirect) {
 
       let vm = this;
-      let props = vm.extractProps();
+      let props1 = vm.extractProps('props1');
+      let props2 = vm.extractProps('props2');
+      let props3 = vm.extractProps('props3');
+
       vm.content = vm.$refs.Editor.getContent();
       vm.$http.post("api/docs/batch", {
         description: vm.description,
         content: vm.content,
         batch_id: vm.batch_id,
-        props: props
+        props1: props1,
+        props2: props2,
+        props3: props3,
       }).then(res => {
         vm.canNew = 0;
         vm.posted = 1;
@@ -464,6 +426,15 @@ span.label {
   margin-bottom: 3px;
 }
 
+.cats .btn {
+  margin-left: 3px;
+  margin-top: 3px
+}
+
+.cats.alert {
+  margin-bottom: 3px
+}
+
 .cats.well {
   margin-bottom: 2px
 }
@@ -477,4 +448,3 @@ ght: 3px;
 }
 #upload {margin-top:80px}
 </style>
-  

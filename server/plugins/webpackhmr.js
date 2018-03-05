@@ -14,11 +14,12 @@ function init(appconf) {
                 options: {
                     config: WebpackConfig,
                     options: {
-                       // stats: 'errors-only',
-                        noInfo: false,
+						//headers: { "Access-Control-Allow-Origin": "*" }﻿, //Magic line, try it
+                        stats: 'errors-only',
+                        noInfo: true,
                         publicPath: WebpackConfig.output.publicPath,
                         stats: {
-                            colors: true
+                            colors: true 
                         }
                     }
                 }
