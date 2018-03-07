@@ -161,6 +161,10 @@ module.exports = [{
     path: '/api/docs/getzip/{batch_id}',
     handler: function(request, reply) {
 		let db = this.db;
+
+    //var zipFileName = "מורות_משקיעות_" + request.params.batch_id.substr( request.params.batch_id.length - 6).replace(":","_");
+    var zipFileName = "morot_mashkiot_"+request.params.batch_id.replace(":","_") +".zip";
+
 		db.get("select path from docs where batch_id =?", [request.params.batch_id], function(err, result) {
 			if(err) return reply({err:err})
 			//return reply(result);
@@ -168,10 +172,10 @@ module.exports = [{
 				let fileName ="morotmashkiot.zip";
 			   if(err) return reply({err:err})
 			   return reply(buffer).type('application/zip').
-				header('content-disposition', 'attachment; filename='+fileName+';');
+				header('content-disposition', 'attachment; filename='+zipFileName+';');
 		    });
 	})
-			
+
     }
   }, {
     method: 'get',

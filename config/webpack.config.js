@@ -9,7 +9,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, '../public/'),
     publicPath: '/',
-    filename: 'build/bundle6.js'
+    filename: 'build/bundle16.js'
   },
   resolve: {
     modules: [path.join(__dirname, '../node_modules'), 'node_modules'],

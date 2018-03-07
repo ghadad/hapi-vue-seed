@@ -31,12 +31,12 @@
        var name = data.file.hapi.filename;
        var batch_id = request.payload.batch_id;
        var absdir = path.resolve(request.server.app.config.uploadDirectory, batch_id);
+
        var thumbnsDir = path.resolve(absdir, "thumbs");
 
 
        var fullpath = absdir + path.sep + name;
 
-       console.log("fullpath:", fullpath)
        var file;
        Async.series([
          function(cb) {
@@ -139,7 +139,6 @@
      prm.push(JSON.stringify(request.payload.cat1));
      prm.push(JSON.stringify(request.payload.cat2));
      prm.push(JSON.stringify(request.payload.cat3));
-     console.log("PRM : ", prm)
      this.db.run("update props set cat1 = ? ,cat2 = ? ,cat3 = ?", prm, function(err) {
        if (err) return reply(Boom.badRequest(err));
        return reply({
@@ -162,7 +161,6 @@
          ret.cat1 = JSON.parse(res.cat1 || '[]')
          ret.cat2 = JSON.parse(res.cat2 || '[]')
          ret.cat3 = JSON.parse(res.cat3 || '[]')
-         console.log(ret)
          return reply(ret)
        } else
          return reply({
@@ -303,7 +301,7 @@
       if (request.query.myfiles) {
         more_sql += " and created_by = $id ";
         prm.$id = request.auth.credentials.profile.id
-      } else { 
+      } else {
 	   more_sql += " and docs_group.active = 1 "
 	  }
 
@@ -317,7 +315,6 @@
       let offset = (currentPage - 1) * pageSize;
       let offset_sql = " offset " + offset
 
-      console.log("more_sql", more_sql)
       Async.series([
           function(cb) {
 
@@ -332,7 +329,6 @@
             })
           },
           function(cb) {
-            console.log(sql + more_sql + offset_sql)
             db.all(sql + more_sql + offset_sql, prm, function(err, docs) {
               if (err) {
                 cb(err, null)

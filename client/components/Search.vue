@@ -1,17 +1,18 @@
 <template>
 <div id="search" class="row">
   <div class="col-md-12">
-    <div class="text-center">
-      <form @submit.prevent class="form form-inline">
-        <div class="form-group">
+    <div class="text-center ">
+      <form @submit.prevent class="form form-inline ">
+        <div class="form-group ">
 
-          <input type="search" class="form-control" v-model="term" placeholder="">
-          <button class="btn btn-primary" @click="search('init')">חיפוש</button>
+          <input type="search " class="form-control " v-model="term " placeholder=" ">
+          <button class="btn btn-primary " @click="search( 'init') ">חיפוש</button>
         </div>
       </form>
     </div>
+    <pagination :page="page" :totalPages="totalPages " :totalRows="totalRows " :displayPages="20 " @setPage="(val)=> { this.setPage(val)}"></pagination>
 
-    <pagination :page="page" :totalPages="totalPages" :totalRows="totalRows" :displayPages="20" @setPage="(val) => { this.setPage(val)}"></pagination>
+    <div class="not-found alert alert-danger" v-show="notFound==true">לא נמצאו תיקיות מתאימות לחיפוש</div>
 
     <table class="table table-striped">
       <thead>
@@ -35,21 +36,22 @@
             <a :href="'/api/docs/getfile/'+r.id">  <i class="download_thumb glyphicon glyphicon-download"></i>
           <br />הורדה </a></td-->
           <td class="td_file">
-            <h4> <router-link :to="{path:'folder',query:{batch_id:r.batch_id}}">{{r.description}}</router-link></h4>
+
+            <h4><router-link :to="{path:'folder',query:{batch_id:r.batch_id}}">{{r.description}}</router-link></h4>
             <!--h5> <a :href="'/api/docs/getfile/'+r.id"> {{r.filename}} </a></h5-->
             <div class="">תגיות :
-               <span v-for="p in r.props1">
-                 <router-link  :to="{ name: 'myfiles', query: {term:p,tag:true,init:true}}">
+              <span v-for="p in r.props1">
+                 <router-link  :to="{ name: 'Search', query: {term:p,tag:true,init:true}}">
                 <span class="tag label label-default">{{p}}</span>
               </router-link>
               </span>
-			  <span v-for="p in r.props2">
-                 <router-link  :to="{ name: 'myfiles', query: {term:p,tag:true,init:true}}">
+              <span v-for="p in r.props2">
+                 <router-link  :to="{ name: 'Search', query: {term:p,tag:true,init:true}}">
                 <span class="tag label label-default">{{p}}</span>
               </router-link>
               </span>
-			  <span v-for="p in r.props3">
-                 <router-link  :to="{ name: 'myfiles', query: {term:p,tag:true,init:true}}">
+              <span v-for="p in r.props3">
+                 <router-link  :to="{ name: 'Search', query: {term:p,tag:true,init:true}}">
                 <span class="tag label label-default">{{p}}</span>
               </router-link>
               </span>
@@ -83,6 +85,7 @@ import Store from "../store";
 export default {
   data() {
     return {
+      notFound: false,
       modal: {
         title: "",
         picUrl: ""
@@ -101,12 +104,15 @@ export default {
     }
   },
   mounted() {
-    //if (this.$route.query.term) {
-    //  this.term = this.$route.query.term
-    //  if (this.$route.query.tag) this.tag = true;
-    //  else this.tag = false;
-    //  this.search();
-    //  }
+    this.search();
+    if (this.$route.query.term) {
+      this.term = this.$route.query.term
+      if (this.$route.query.tag) this.tag = true;
+      else this.tag = false;
+      //  this.search();
+    } else {
+      //  this.search();
+    }
   },
   watch: {
     '$route.query.init': function(oldv, newv) {
@@ -129,7 +135,7 @@ export default {
       this.modal.title = r.filename;
     },
     getUserLink(id) {
-      if (id == 1) id = 397081443825167;
+      //if (id == 1) id = 397081443825167;
 
       //  let fbProfileLink = 'https://facebook.com/' + r.created_by;
 
@@ -148,8 +154,9 @@ export default {
       this.search();
     },
     search(initQ) {
+
       let vm = this;
-      if (!vm.term) return false;
+      vm.notFound = false;
       if (initQ == 'init') {
         vm.page = 0;
         vm.$router.push({
@@ -163,6 +170,7 @@ export default {
       vm.result = [];
       vm.$http.get("/api/docs/search2", {
         params: {
+          //  myfiles: true,
           term: vm.term,
           tag: vm.tag,
           page: vm.page,
@@ -174,7 +182,9 @@ export default {
         if (vm.page == 0) {
           vm.totalPages = res.data.totalPages
           vm.totalRows = res.data.count
-
+          if (vm.totalRows == 0) {
+            vm.notFound = true;
+          }
         }
 
       }).catch(err => {
@@ -211,6 +221,10 @@ td.td_thumb {
 
 .td_thumb img {
   width: 100%;
+}
+
+.not-found {
+  margin: 10px
 }
 
 td.td_profile {

@@ -1,17 +1,20 @@
 <template>
 <div id="upload">
   <div class="row">
-    <div class="col-md-12">
+
+    <div class="col-md-10">
       <h4><span v-show="active" class="badge label-success">פוסט פעיל</span>
         <span v-show="!active" class="badge  label-danger"> ממתין לפרסום </span>
          קוד תיקיה :  {{batch_id}}      </h4>
       <h4><button v-show="canPublish && !active" class="btn btn-md" @click="setStatus(1)">פרסם תיקיה</button>
-        <button v-show="active" class="btn btn-md btn-danger" @click="setStatus(0)">בטל פרסום</button>
+        <button v-show="posted && canNew>0  && active" class="btn btn-md btn-danger" @click="setStatus(0)">בטל פרסום</button>
         <button @click="saveBatch()" v-if="description && !descriptionError" class="btn btn-md btn-primary">שמור</button>
-        <button class="btn btn-md btn-primary" v-show="canNew!=1" @click="canNew=1">תיקיה חדש</button>
-        <button class="btn btn-md btn-primary" v-show="canNew==1" @click="getNew()">נא אשרו</button>
         <button class="btn btn-md btn-danger" @click="deleteGroupLevel=1" v-show="canDelete && deleteGroupLevel==0">מחק תיקיה</button>
-        <router-link v-show="posted" class="btn btn-md btn-info" :to="{path:'folder',query: { batch_id: batch_id }}"><i class="glyphicon glyphicon-search"> </i> תצוגת תיקייה </router-link>
+        <router-link v-show="posted" class="btn btn-md btn-default" :to="{path:'folder',query: { batch_id: batch_id }}"><i class="glyphicon glyphicon-search"> </i> תצוגת תיקייה </router-link>
+        <button  class="btn btn-md btn-info" v-show="posted && canNew==1" @click="canNew=2">תיקיה חדש</button>
+        <button  class="btn btn-md btn-info" v-show="posted && canNew==2" @click="getNew()">נא אשרו</button>
+        <span class="flash" v-show="flash" v-html="flash"></span>
+
     </h4>
     </div>
   </div>
@@ -33,9 +36,8 @@
       <div class="alert alert-info">
         <h4>קבצים בתיקייה</h4>
         <div v-show="!posted" class="alert alert-info">בצעו שמירה ע"מ שתוכלו להעלות קבצים לתיקייה</div>
-        <dropzone v-show="posted" id="myVueDropzone" url="/api/docs/upload" :use-custom-dropzone-options="true" :dropzone-options="dropzoneOptions" v-on:vdropzone-error="showSError">
-          <input type="hidden" name="batch_id" :value="batch_id">
-        </dropzone>
+        <vue-dropzone v-show="posted" id="myVueDropzone" :options="dropzoneOptions" v-on:vdropzone-sending="sendingEvent">
+        </vue-dropzone>
         <div v-show="!docs.length && posted" class="alert alert-default">עדיין לא העלת קבצים לתיקיה</div>
         <table class="table table-borderd">
           <tr class="list-group" v-for="(f,index) in docs">
@@ -66,7 +68,8 @@
 </div>
 </template>
 <script>
-import Dropzone from 'vue2-dropzone';
+import vue2Dropzone from 'vue2-dropzone'
+
 import Store from "../store"
 
 export default {
@@ -74,6 +77,7 @@ export default {
   name: 'Upload',
   mounted() {
     let vm = this;
+    vm.canNew = 0;
     vm.$http.get("/api/docs/props").then(res => {
       vm.$set(vm, 'availableDocsProps', res.data);
     }).catch(err => {
@@ -82,8 +86,10 @@ export default {
     vm.getData();
   },
   data() {
+
     let vm = this;
     return {
+      flash: "",
       propsState: {
         props1: {},
         props2: {},
@@ -106,6 +112,7 @@ export default {
       docs: [],
       description: "",
       dropzoneOptions: {
+        url: "/api/docs/upload", 
         previewTemplate: `
         <div class="dz-preview dz-file-preview" id="template">  <!-- template for images -->
                                 <div class="dz-details dztemplate">
@@ -121,27 +128,24 @@ export default {
                                 <div class="dz-error-mark" style="display:none;"><span>ggg</span></div>
                                 <div class="dz-error-message" style="display:none;"><span data-dz-errormessage></span></div>
 
-               `,
+        `,
         acceptedFiles: "image/*,.doc,.docx,.pdf,.pps,.ppt",
         dictDefaultMessage: "<i style='font-size:25px;color:black' class='dzicon glyphicon glyphicon-cloud-upload'></i> <br />לחצו על כפתור העכבר או גררו את הקבצים לתוך חלון זה",
         dictInvalidFileType: "לא ניתן להעלות סוג קובץ זה",
         dictFileTooBig: "הקובץ גדול מדי ({{filesize}}MiB). גודל מקסימלי הינו : {{maxFilesize}}MiB.",
         maxFiles: 20,
-        //addRemoveLinks: true,
         addCancelLinks: true,
         dictCancelUpload: "בטל שיתוף",
         dictRemoveFile: "מחק קובץ",
         maxFilesize: 256 * 1000,
-
         addedfile: function(file) {
-          alert(file)
           vm.spin = true;
         },
         removedfile: function(file) {
 
         },
         error: function(file, result) {
-          //  alert("error" + JSON.stringifydz-complete(result))
+          //  alert("error" + JSON.stringifydz - complete(result))
           //  alert("error" + JSON.stringify(file))
         },
         success: function(file, result) {
@@ -154,8 +158,7 @@ export default {
     }
   },
   components: {
-    Dropzone
-
+    vueDropzone: vue2Dropzone
   },
   watch: {
     content: function() {
@@ -163,10 +166,20 @@ export default {
     }
   },
   methods: {
+
+   sendingEvent (file, xhr, formData) {
+	let vm = this;
+        formData.append('batch_id', vm.batch_id);
+      },
+
+    getUrl() { let vm = this ;
+	return "/api/docs/upload?batch_id=" + vm.batch_id;
+   } ,
     getNew() {
       let vm = this;
       vm.$http.get("/api/docs/getnext").then(res => {
         vm.canNew = 0;
+        vm.posted = 0;
         vm.content = ""
         vm.description = ""
 
@@ -221,6 +234,7 @@ export default {
             vm.description = res.data.docs_group.description
             vm.$set(vm, 'content', res.data.docs_group.content);
             vm.posted = true;
+            vm.canNew = 1;
             vm.active = res.data.docs_group.active;
             vm.docs = res.data.docs;
             vm.setPropsState(res.data.docs_group);
@@ -239,6 +253,7 @@ export default {
           vm.active = res.data.docs_group.active;
           vm.setPropsState(res.data.docs_group);
           vm.posted = true;
+          vm.canNew = 1;
           vm.$forceUpdate();
         }).catch(() => {
 
@@ -311,8 +326,12 @@ export default {
         props2: props2,
         props3: props3,
       }).then(res => {
-        vm.canNew = 0;
+        vm.canNew = 1;
         vm.posted = 1;
+        vm.flash = "נשמר " + "<i class='glyphicon glyphicon-ok'></i>";
+        setTimeout(() => {
+          vm.flash = ""
+        }, 2000)
         if (redirect == true)
           vm.$router.push({
             path: 'folder',
@@ -341,6 +360,11 @@ export default {
     }
   },
   computed: {
+    theUrl : function () { 
+      let vm = this;
+	if(vm.batch_id) return  "/api/docs/upload?batch_id=" + vm.batch_id;
+	return "" ;
+    },
     reactive_content: function() {
       let vm = this;
 
@@ -433,6 +457,10 @@ span.label {
 
 .cats.alert {
   margin-bottom: 3px
+}
+
+.flash {
+  color: green
 }
 
 .cats.well {
